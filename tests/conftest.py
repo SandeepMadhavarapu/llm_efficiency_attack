@@ -1,9 +1,15 @@
 """Shared test fixtures.
 
-Everything here is constructed locally from a config with random weights. No test
-touches the Hugging Face Hub, so the suite runs offline, in CI, and in seconds.
-That is deliberate: a test suite that needs a 240MB download is a test suite people
-stop running.
+The default fixtures are constructed locally from a config with random weights.
+No test in the fast suite touches the Hugging Face Hub, so it runs offline, in
+CI, and in seconds. That is deliberate: a test suite that needs a 240MB download
+is a test suite people stop running.
+
+Tests that genuinely need a trained model and a real tokenizer are marked
+`@pytest.mark.integration` and skipped unless `--run-integration` is passed. They
+exist because some of this package's invariants -- decode/re-encode exactness in
+particular -- cannot be tested against a toy tokenizer without the toy tokenizer
+becoming the thing under test.
 """
 
 from __future__ import annotations
@@ -18,23 +24,71 @@ from transformers import (
     T5ForConditionalGeneration,
 )
 
+# Embedding rows in the toy models. The tokenizer deliberately covers fewer ids
+# than this, mirroring real checkpoints: t5-small has 32128 embedding rows for a
+# 32100-token vocabulary, and the attack must never substitute in the difference.
 VOCAB = 64
 PAD, EOS = 0, 1
+SPECIAL_IDS = [0, 1, 2, 3]
+FIRST_TOKEN_ID = 4
+# 26 lowercase + space + 26 uppercase + 5 punctuation = 58 characters.
+ALPHABET = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?-"
+TOKENIZER_VOCAB = FIRST_TOKEN_ID + len(ALPHABET)  # 62; ids 62 and 63 have no token
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--run-integration",
+        action="store_true",
+        default=False,
+        help="run tests that download real Hugging Face models",
+    )
+
+
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers", "integration: needs a real Hugging Face model download"
+    )
+
+
+def pytest_collection_modifyitems(config, items):
+    if config.getoption("--run-integration"):
+        return
+    skip = pytest.mark.skip(reason="needs --run-integration")
+    for item in items:
+        if "integration" in item.keywords:
+            item.add_marker(skip)
 
 
 class ToyTokenizer:
-    """Character-code tokenizer implementing the slice of the HF API we use.
+    """Character tokenizer implementing the slice of the HF API this package uses.
 
-    Maps each character to `ord(c) % (VOCAB - 4) + 4`, keeping ids clear of the
-    special range. Not reversible in a linguistically meaningful way, which does
-    not matter: these tests exercise control flow and tensor bookkeeping, not
-    language quality.
+    Unlike a throwaway stub, this one is a genuine bijection on its alphabet:
+    `decode` is the exact inverse of `__call__` on ids in `[FIRST_TOKEN_ID,
+    TOKENIZER_VOCAB)`. That matters because the attacker enforces a
+    decode/re-encode round-trip invariant, and a tokenizer whose decode is not an
+    inverse would make every candidate look invalid -- the tests would pass or
+    fail for reasons that have nothing to do with the code under test.
+
+    Two properties are modelled on purpose because the attack has to cope with
+    them in the real world:
+
+    * ids 0-3 are special and are stripped by `skip_special_tokens=True`;
+    * ids 62-63 exist in the embedding table but map to no character, exactly as
+      t5-small's 28 surplus embedding rows do.
+
+    Both must be excluded from the candidate set, and `test_attacker.py` checks
+    that they are.
     """
 
-    all_special_ids = [PAD, EOS]
+    all_special_ids = SPECIAL_IDS
+
+    def __len__(self) -> int:
+        return TOKENIZER_VOCAB
 
     def __call__(self, text: str, return_tensors: str | None = None) -> BatchEncoding:
-        ids = [ord(c) % (VOCAB - 4) + 4 for c in text[:16]] or [4]
+        ids = [FIRST_TOKEN_ID + ALPHABET.index(c) for c in text if c in ALPHABET]
+        ids = ids or [FIRST_TOKEN_ID]
         ids.append(EOS)
         data = {
             "input_ids": torch.tensor([ids], dtype=torch.long),
@@ -46,7 +100,11 @@ class ToyTokenizer:
         out = [int(i) for i in ids]
         if skip_special_tokens:
             out = [i for i in out if i not in self.all_special_ids]
-        return "".join(chr(65 + (i % 26)) for i in out)
+        return "".join(
+            ALPHABET[i - FIRST_TOKEN_ID]
+            for i in out
+            if FIRST_TOKEN_ID <= i < TOKENIZER_VOCAB
+        )
 
 
 @pytest.fixture
