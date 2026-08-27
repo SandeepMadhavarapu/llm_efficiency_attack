@@ -4,5 +4,7 @@ __pycache__/
 *.egg-info/
 build/
 dist/
-quickstart_logs.json
 .pytest_cache/
+# Root-level experiment dumps. Committed evidence lives in results/.
+ablation_results.json
+quickstart_logs.json

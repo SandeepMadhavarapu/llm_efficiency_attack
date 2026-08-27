@@ -21,13 +21,18 @@ dependencies = [
     "transformers>=4.40,<6.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/SandeepMadhavarapu/llm_efficiency_attack"
+Repository = "https://github.com/SandeepMadhavarapu/llm_efficiency_attack"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
 ]
-# `sentencepiece` is not a hard dependency of this package, but T5's tokenizer
-# needs it, so the quickstart does. Kept separate so attacking a model with a
-# fast tokenizer does not drag it in.
+# `sentencepiece` is not needed by the library, and on the transformers version
+# tested here (5.16) `t5-small` loads without it. It is kept as an extra because
+# older transformers releases inside the supported range fall back to the slow
+# SentencePiece tokenizer for T5, which does require it.
 examples = [
     "sentencepiece>=0.2.0",
 ]
