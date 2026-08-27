@@ -1,0 +1,611 @@
+{
+  "environment": {
+    "model": "t5-small",
+    "tokenizer": "T5Tokenizer",
+    "torch": "2.13.0+cpu",
+    "transformers": "5.16.1",
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "device": "cpu",
+    "protected_prefix_tokens": 7,
+    "base_config": {
+      "objective": "eos_suppression",
+      "max_iterations": 6,
+      "perturbation_budget": 3,
+      "max_new_tokens": 128,
+      "objective_horizon": 8,
+      "seed": 0,
+      "verbose": false
+    },
+    "top_k_sweep": [
+      5,
+      20,
+      100
+    ]
+  },
+  "inputs": [
+    "translate English to German: The house is wonderful.",
+    "translate English to German: She walked to the market this morning.",
+    "translate English to German: The weather today is unusually cold.",
+    "translate English to German: He forgot his keys on the kitchen table.",
+    "translate English to German: They are building a new library downtown.",
+    "summarize: The committee met on Tuesday to review the annual budget report.",
+    "translate English to French: Good morning, how are you today?"
+  ],
+  "benign_output_tokens": [
+    6,
+    8,
+    14,
+    12,
+    12,
+    14,
+    12
+  ],
+  "benign_mean_output_tokens": 11.142857142857142,
+  "benign_at_ceiling": 0,
+  "results": {
+    "gradient_k5": {
+      "strategy": "gradient",
+      "top_k": 5,
+      "mean_output_tokens": 14.428571428571429,
+      "mean_delta_tokens": 3.2857142857142856,
+      "inputs_improved": 4,
+      "inputs_unchanged": 3,
+      "inputs_worsened": 0,
+      "uninformative_censoring": 0,
+      "search_model_forwards": 1022,
+      "seconds": 13.13890790000005,
+      "per_input": [
+        {
+          "input": "translate English to German: The house is wonderful.",
+          "adv_x": "translate English to German: The house is cornea.",
+          "benign_output_tokens": 6,
+          "adversarial_output_tokens": 9,
+          "delta": 3,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: She walked to the market this morning.",
+          "adv_x": "translate English to German: She walked to the market this suprafete.",
+          "benign_output_tokens": 8,
+          "adversarial_output_tokens": 13,
+          "delta": 5,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: The weather today is unusually cold.",
+          "adv_x": "translate English to German: The weather today is gandurily cold.",
+          "benign_output_tokens": 14,
+          "adversarial_output_tokens": 14,
+          "delta": 0,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: He forgot his keys on the kitchen table.",
+          "adv_x": "translate English to German: He forgot his referendum on the kitchen table.",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 14,
+          "delta": 2,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: They are building a new library downtown.",
+          "adv_x": "translate English to German: They are building a new libraryessentially.",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 12,
+          "delta": 0,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+          "adv_x": "summarize: The committee met on TuesdayLinkedcle the annual budget reportango",
+          "benign_output_tokens": 14,
+          "adversarial_output_tokens": 27,
+          "delta": 13,
+          "hamming_distance": 3,
+          "positions_touched": 3,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to French: Good morning, how are you today?",
+          "adv_x": "translate English to French: Good morning, how are you today?",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 12,
+          "delta": 0,
+          "hamming_distance": 0,
+          "positions_touched": 0,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        }
+      ]
+    },
+    "random_k5": {
+      "strategy": "random",
+      "top_k": 5,
+      "mean_output_tokens": 16.142857142857142,
+      "mean_delta_tokens": 5,
+      "inputs_improved": 5,
+      "inputs_unchanged": 2,
+      "inputs_worsened": 0,
+      "uninformative_censoring": 0,
+      "search_model_forwards": 776,
+      "seconds": 9.605493399999432,
+      "per_input": [
+        {
+          "input": "translate English to German: The house is wonderful.",
+          "adv_x": "translate English to German: The house is predictable.",
+          "benign_output_tokens": 6,
+          "adversarial_output_tokens": 10,
+          "delta": 4,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: She walked to the market this morning.",
+          "adv_x": "translate English to German: She walked to\u00e4rztliche market this morning.",
+          "benign_output_tokens": 8,
+          "adversarial_output_tokens": 10,
+          "delta": 2,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: The weather today is unusually cold.",
+          "adv_x": "translate English to German: The weather today cuprins unusual predictableceased.",
+          "benign_output_tokens": 14,
+          "adversarial_output_tokens": 23,
+          "delta": 9,
+          "hamming_distance": 3,
+          "positions_touched": 3,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: He forgot his keys on the kitchen table.",
+          "adv_x": "translate English to German: He forgot his keys on the kitchen table.",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 12,
+          "delta": 0,
+          "hamming_distance": 0,
+          "positions_touched": 0,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: They are building a new library downtown.",
+          "adv_x": "translate English to German: They are allegations a prospective library downtown.",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 15,
+          "delta": 3,
+          "hamming_distance": 2,
+          "positions_touched": 2,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+          "adv_x": "summarize: The committee met on Tuesday to review the prospective budget reporthei\u00dfen",
+          "benign_output_tokens": 14,
+          "adversarial_output_tokens": 31,
+          "delta": 17,
+          "hamming_distance": 2,
+          "positions_touched": 2,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to French: Good morning, how are you today?",
+          "adv_x": "translate English to French: Good morning, how are you today?",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 12,
+          "delta": 0,
+          "hamming_distance": 0,
+          "positions_touched": 0,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        }
+      ]
+    },
+    "gradient_k20": {
+      "strategy": "gradient",
+      "top_k": 20,
+      "mean_output_tokens": 13.428571428571429,
+      "mean_delta_tokens": 2.2857142857142856,
+      "inputs_improved": 4,
+      "inputs_unchanged": 1,
+      "inputs_worsened": 2,
+      "uninformative_censoring": 0,
+      "search_model_forwards": 4164,
+      "seconds": 42.35205739999947,
+      "per_input": [
+        {
+          "input": "translate English to German: The house is wonderful.",
+          "adv_x": "translate English to German: The house is Madagascar.",
+          "benign_output_tokens": 6,
+          "adversarial_output_tokens": 9,
+          "delta": 3,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: She walked to the market this morning.",
+          "adv_x": "translate English to German: She walked to the market this recession.",
+          "benign_output_tokens": 8,
+          "adversarial_output_tokens": 13,
+          "delta": 5,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: The weather today is unusually cold.",
+          "adv_x": "translate English to German: The weather today is unrealisticly cold.",
+          "benign_output_tokens": 14,
+          "adversarial_output_tokens": 13,
+          "delta": -1,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: He forgot his keys on the kitchen table.",
+          "adv_x": "translate English to German: He forgot his Kashmir on the kitchen table.",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 15,
+          "delta": 3,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: They are building a new library downtown.",
+          "adv_x": "translate English to German: They are building a new libraryessentially.",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 12,
+          "delta": 0,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+          "adv_x": "summarize: The committee met on Tuesday tocosting thecosting budget report placeholder",
+          "benign_output_tokens": 14,
+          "adversarial_output_tokens": 22,
+          "delta": 8,
+          "hamming_distance": 3,
+          "positions_touched": 3,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to French: Good morning, how are you today?",
+          "adv_x": "translate English to French: Good morning, how are you aplicatii?",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 10,
+          "delta": -2,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        }
+      ]
+    },
+    "random_k20": {
+      "strategy": "random",
+      "top_k": 20,
+      "mean_output_tokens": 17.285714285714285,
+      "mean_delta_tokens": 6.142857142857143,
+      "inputs_improved": 6,
+      "inputs_unchanged": 1,
+      "inputs_worsened": 0,
+      "uninformative_censoring": 0,
+      "search_model_forwards": 4001,
+      "seconds": 39.031181899999865,
+      "per_input": [
+        {
+          "input": "translate English to German: The house is wonderful.",
+          "adv_x": "translate English to German: The house is predictable.",
+          "benign_output_tokens": 6,
+          "adversarial_output_tokens": 10,
+          "delta": 4,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: She walked to the market this morning.",
+          "adv_x": "translate English to German: She walked to youthful interrupted utilizeaz morning.",
+          "benign_output_tokens": 8,
+          "adversarial_output_tokens": 14,
+          "delta": 6,
+          "hamming_distance": 3,
+          "positions_touched": 3,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: The weather today is unusually cold.",
+          "adv_x": "translate English to German: The weather allegations is unusually alive.",
+          "benign_output_tokens": 14,
+          "adversarial_output_tokens": 14,
+          "delta": 0,
+          "hamming_distance": 2,
+          "positions_touched": 2,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: He forgot his keys on the kitchen table.",
+          "adv_x": "translate English to German: He forgot Nicaragua keys on the Crown table.",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 17,
+          "delta": 5,
+          "hamming_distance": 2,
+          "positions_touched": 2,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: They are building a new library downtown.",
+          "adv_x": "translate English to German: They are allegations a new alive paradigm.",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 15,
+          "delta": 3,
+          "hamming_distance": 3,
+          "positions_touched": 3,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+          "adv_x": "summarize: The committee met on Tuesday todict the annualsport reportLED",
+          "benign_output_tokens": 14,
+          "adversarial_output_tokens": 31,
+          "delta": 17,
+          "hamming_distance": 3,
+          "positions_touched": 3,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to French: Good morning, how are you today?",
+          "adv_x": "translate English to French: Good morning allegations how are interrupted today?",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 20,
+          "delta": 8,
+          "hamming_distance": 2,
+          "positions_touched": 2,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        }
+      ]
+    },
+    "gradient_k100": {
+      "strategy": "gradient",
+      "top_k": 100,
+      "mean_output_tokens": 15.142857142857142,
+      "mean_delta_tokens": 4,
+      "inputs_improved": 6,
+      "inputs_unchanged": 1,
+      "inputs_worsened": 0,
+      "uninformative_censoring": 0,
+      "search_model_forwards": 20579,
+      "seconds": 183.5847205,
+      "per_input": [
+        {
+          "input": "translate English to German: The house is wonderful.",
+          "adv_x": "translate English to German: The house is Netanyahu.",
+          "benign_output_tokens": 6,
+          "adversarial_output_tokens": 10,
+          "delta": 4,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: She walked to the market this morning.",
+          "adv_x": "translate English to German: She walked to the market this coton.",
+          "benign_output_tokens": 8,
+          "adversarial_output_tokens": 12,
+          "delta": 4,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: The weather today is unusually cold.",
+          "adv_x": "translate English to German: The weather acasa is camionly cold.",
+          "benign_output_tokens": 14,
+          "adversarial_output_tokens": 24,
+          "delta": 10,
+          "hamming_distance": 2,
+          "positions_touched": 2,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: He forgot his keys on the kitchen table.",
+          "adv_x": "translate English to German: He forgot his credibility on the kitchen table.",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 15,
+          "delta": 3,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: They are building a new library downtown.",
+          "adv_x": "translate English to German: They are building a new libraryessentially.",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 12,
+          "delta": 0,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+          "adv_x": "summarize: The committee met on Tuesday to review the superioara budget report placeholder",
+          "benign_output_tokens": 14,
+          "adversarial_output_tokens": 19,
+          "delta": 5,
+          "hamming_distance": 2,
+          "positions_touched": 2,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to French: Good morning, how are you today?",
+          "adv_x": "translate English to French: Good morning, how senator you approve?",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 14,
+          "delta": 2,
+          "hamming_distance": 2,
+          "positions_touched": 2,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        }
+      ]
+    },
+    "random_k100": {
+      "strategy": "random",
+      "top_k": 100,
+      "mean_output_tokens": 19.714285714285715,
+      "mean_delta_tokens": 8.571428571428571,
+      "inputs_improved": 7,
+      "inputs_unchanged": 0,
+      "inputs_worsened": 0,
+      "uninformative_censoring": 0,
+      "search_model_forwards": 17221,
+      "seconds": 152.1978949000004,
+      "per_input": [
+        {
+          "input": "translate English to German: The house is wonderful.",
+          "adv_x": "translate English to German: The house is predictable.",
+          "benign_output_tokens": 6,
+          "adversarial_output_tokens": 10,
+          "delta": 4,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: She walked to the market this morning.",
+          "adv_x": "translate English to German: She walked princess the interrupted Linux morning.",
+          "benign_output_tokens": 8,
+          "adversarial_output_tokens": 18,
+          "delta": 10,
+          "hamming_distance": 3,
+          "positions_touched": 3,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: The weather today is unusually cold.",
+          "adv_x": "translate English to German: The weather today collaborator unusually Linux.",
+          "benign_output_tokens": 14,
+          "adversarial_output_tokens": 16,
+          "delta": 2,
+          "hamming_distance": 2,
+          "positions_touched": 2,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: He forgot his keys on the kitchen table.",
+          "adv_x": "translate English to German: He forgot Safari keys on flagship kitchendoc.",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 19,
+          "delta": 7,
+          "hamming_distance": 3,
+          "positions_touched": 3,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to German: They are building a new library downtown.",
+          "adv_x": "translate English to German: They are building scalable interrupted Linux downtown.",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 18,
+          "delta": 6,
+          "hamming_distance": 3,
+          "positions_touched": 3,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+          "adv_x": "summarize: The committee met on Tuesdaydistributing review the annual budgetstaLED",
+          "benign_output_tokens": 14,
+          "adversarial_output_tokens": 35,
+          "delta": 21,
+          "hamming_distance": 3,
+          "positions_touched": 3,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        },
+        {
+          "input": "translate English to French: Good morning, how are you today?",
+          "adv_x": "translate English to French: Good morning allegations how grounds ajung today?",
+          "benign_output_tokens": 12,
+          "adversarial_output_tokens": 22,
+          "delta": 10,
+          "hamming_distance": 3,
+          "positions_touched": 3,
+          "round_trip_exact": true,
+          "censoring": "point_estimate"
+        }
+      ]
+    }
+  },
+  "gradient_vs_random": {
+    "5": {
+      "gradient": 3.2857142857142856,
+      "random": 5,
+      "advantage": -1.7142857142857144
+    },
+    "20": {
+      "gradient": 2.2857142857142856,
+      "random": 6.142857142857143,
+      "advantage": -3.8571428571428577
+    },
+    "100": {
+      "gradient": 4,
+      "random": 8.571428571428571,
+      "advantage": -4.571428571428571
+    }
+  }
+}

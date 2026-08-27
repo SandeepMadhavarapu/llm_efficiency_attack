@@ -1,0 +1,254 @@
+{
+  "gradient": {
+    "config": {
+      "objective": "eos_suppression",
+      "strategy": "gradient",
+      "max_iterations": 10,
+      "perturbation_budget": 3,
+      "top_k": 20,
+      "max_new_tokens": 128,
+      "protected_prefix_tokens": 7,
+      "objective_horizon": 8,
+      "seed": 0,
+      "device": "auto",
+      "verbose": true
+    },
+    "benign": {
+      "output_tokens": 6,
+      "wall_time_s": 0.04689890000008745,
+      "stopped_by": "eos"
+    },
+    "adversarial": {
+      "output_tokens": 9,
+      "wall_time_s": 0.06119870000020455,
+      "stopped_by": "eos"
+    },
+    "cost": {
+      "benign_output_tokens": 6,
+      "adversarial_output_tokens": 9,
+      "output_token_ratio": 1.5,
+      "wall_time_ratio": 1.3049069381177476,
+      "note": "output_token_ratio is the primary metric: generated token count under greedy decoding, which is deterministic and hardware-independent. It is a proxy for inference cost, not a latency measurement. wall_time_ratio is secondary and noisy -- on short generations it is dominated by scheduling jitter and can come out below 1.0 even when the attack succeeded. Read `censored.interpretation` before quoting either number."
+    },
+    "censored": {
+      "max_new_tokens": 128,
+      "benign_hit_ceiling": false,
+      "adversarial_hit_ceiling": false,
+      "interpretation": "point_estimate",
+      "note": "Neither generation reached the max_new_tokens ceiling, so both costs are exact measurements and the reported ratio is a point estimate."
+    },
+    "perturbation": {
+      "budget": 3,
+      "positions_touched": 1,
+      "positions_changed": [
+        8
+      ],
+      "hamming_distance": 1,
+      "round_trip_exact": true,
+      "original_token_ids": [
+        13959,
+        1566,
+        12,
+        2968,
+        10,
+        37,
+        629,
+        19,
+        1627,
+        5,
+        1
+      ],
+      "adversarial_token_ids": [
+        13959,
+        1566,
+        12,
+        2968,
+        10,
+        37,
+        629,
+        19,
+        30616,
+        5,
+        1
+      ],
+      "note": "positions_touched counts positions the search wrote to; hamming_distance counts positions whose final token actually differs from the original. They are not the same number: a position written twice counts once as touched, and a position restored to its original token still counts as touched. The budget bounds positions_touched. round_trip_exact records that the returned text re-tokenises to exactly these ids, so the bound applies to what the caller feeds the model. This is a bound on token-level edit count only: no semantic, fluency, or human-perceptibility constraint is enforced."
+    },
+    "attack_cost": {
+      "objective_evaluations": 64,
+      "gradient_evaluations": 3,
+      "candidates_rejected_non_round_trip": 0,
+      "search_model_forwards": 519,
+      "measurement_model_forwards": 33,
+      "diagnostic_model_forwards": 2,
+      "total_model_forwards": 554,
+      "note": "Model forward counts are instrumented with a forward pre-hook, not estimated: they include every decoding step inside the `generate()` calls that each objective evaluation performs, which is why search_model_forwards is roughly an order of magnitude larger than objective_evaluations. search_model_forwards is what the attack spends; measurement_model_forwards is the benign/adversarial cost metric, which is reporting instrumentation rather than part of the attack; diagnostic_model_forwards is the one-off embedding-equivalence check. The three sum to total_model_forwards. Compare search_model_forwards against the extra decoding steps induced to judge whether the attack is economical for the attacker."
+    },
+    "diagnostics": {
+      "objective_horizon": {
+        "requested": 8,
+        "force_full_horizon": false,
+        "realised_rows_min": 6,
+        "realised_rows_max": 8,
+        "evaluations": 64,
+        "evaluations_at_full_horizon": 29,
+        "note": "objective_horizon is an UPPER BOUND on the number of stop-decision rows the objective sees, not a step count: the trajectory is the model's own greedy output and ends when it emits EOS. When realised_rows_min is below requested, some candidates were scored by a mean over fewer terms than others. The 'eos_suppression_fixed_horizon' objective forces every evaluation to exactly `requested` rows; examples/objective_diagnostic.py measures whether that changes anything (on t5-small it does not)."
+      },
+      "embedding_equivalence_max_logit_deviation": 0.0,
+      "note": "The attack differentiates through `inputs_embeds`. This is the maximum absolute logit difference between that path and the model's normal `input_ids` path on this input, checked once per run. It should be at or near zero; a run that got this far did not exceed the adapter's tolerance."
+    },
+    "iterations": [
+      {
+        "iteration": -1,
+        "objective": -9.518292427062988,
+        "position": null,
+        "token_id": null,
+        "tokens_changed": 0,
+        "output_tokens": 6,
+        "stopped_by": "eos",
+        "elapsed_s": 0.0,
+        "note": "benign starting point, before any substitution"
+      },
+      {
+        "iteration": 0,
+        "objective": -16.664350509643555,
+        "position": 8,
+        "token_id": 28646,
+        "tokens_changed": 1,
+        "output_tokens": 9,
+        "stopped_by": "eos",
+        "elapsed_s": 1.565737199999603
+      },
+      {
+        "iteration": 1,
+        "objective": -17.042415618896484,
+        "position": 8,
+        "token_id": 30616,
+        "tokens_changed": 1,
+        "output_tokens": 9,
+        "stopped_by": "eos",
+        "elapsed_s": 1.549867999999151
+      }
+    ]
+  },
+  "control": {
+    "config": {
+      "objective": "eos_suppression",
+      "strategy": "random",
+      "max_iterations": 10,
+      "perturbation_budget": 3,
+      "top_k": 20,
+      "max_new_tokens": 128,
+      "protected_prefix_tokens": 7,
+      "objective_horizon": 8,
+      "seed": 0,
+      "device": "auto",
+      "verbose": false
+    },
+    "benign": {
+      "output_tokens": 6,
+      "wall_time_s": 0.05120809999971243,
+      "stopped_by": "eos"
+    },
+    "adversarial": {
+      "output_tokens": 10,
+      "wall_time_s": 0.06733669999994163,
+      "stopped_by": "eos"
+    },
+    "cost": {
+      "benign_output_tokens": 6,
+      "adversarial_output_tokens": 10,
+      "output_token_ratio": 1.6666666666666667,
+      "wall_time_ratio": 1.314961890800865,
+      "note": "output_token_ratio is the primary metric: generated token count under greedy decoding, which is deterministic and hardware-independent. It is a proxy for inference cost, not a latency measurement. wall_time_ratio is secondary and noisy -- on short generations it is dominated by scheduling jitter and can come out below 1.0 even when the attack succeeded. Read `censored.interpretation` before quoting either number."
+    },
+    "censored": {
+      "max_new_tokens": 128,
+      "benign_hit_ceiling": false,
+      "adversarial_hit_ceiling": false,
+      "interpretation": "point_estimate",
+      "note": "Neither generation reached the max_new_tokens ceiling, so both costs are exact measurements and the reported ratio is a point estimate."
+    },
+    "perturbation": {
+      "budget": 3,
+      "positions_touched": 1,
+      "positions_changed": [
+        8
+      ],
+      "hamming_distance": 1,
+      "round_trip_exact": true,
+      "original_token_ids": [
+        13959,
+        1566,
+        12,
+        2968,
+        10,
+        37,
+        629,
+        19,
+        1627,
+        5,
+        1
+      ],
+      "adversarial_token_ids": [
+        13959,
+        1566,
+        12,
+        2968,
+        10,
+        37,
+        629,
+        19,
+        24839,
+        5,
+        1
+      ],
+      "note": "positions_touched counts positions the search wrote to; hamming_distance counts positions whose final token actually differs from the original. They are not the same number: a position written twice counts once as touched, and a position restored to its original token still counts as touched. The budget bounds positions_touched. round_trip_exact records that the returned text re-tokenises to exactly these ids, so the bound applies to what the caller feeds the model. This is a bound on token-level edit count only: no semantic, fluency, or human-perceptibility constraint is enforced."
+    },
+    "attack_cost": {
+      "objective_evaluations": 41,
+      "gradient_evaluations": 0,
+      "candidates_rejected_non_round_trip": 0,
+      "search_model_forwards": 347,
+      "measurement_model_forwards": 26,
+      "diagnostic_model_forwards": 2,
+      "total_model_forwards": 375,
+      "note": "Model forward counts are instrumented with a forward pre-hook, not estimated: they include every decoding step inside the `generate()` calls that each objective evaluation performs, which is why search_model_forwards is roughly an order of magnitude larger than objective_evaluations. search_model_forwards is what the attack spends; measurement_model_forwards is the benign/adversarial cost metric, which is reporting instrumentation rather than part of the attack; diagnostic_model_forwards is the one-off embedding-equivalence check. The three sum to total_model_forwards. Compare search_model_forwards against the extra decoding steps induced to judge whether the attack is economical for the attacker."
+    },
+    "diagnostics": {
+      "objective_horizon": {
+        "requested": 8,
+        "force_full_horizon": false,
+        "realised_rows_min": 6,
+        "realised_rows_max": 8,
+        "evaluations": 41,
+        "evaluations_at_full_horizon": 27,
+        "note": "objective_horizon is an UPPER BOUND on the number of stop-decision rows the objective sees, not a step count: the trajectory is the model's own greedy output and ends when it emits EOS. When realised_rows_min is below requested, some candidates were scored by a mean over fewer terms than others. The 'eos_suppression_fixed_horizon' objective forces every evaluation to exactly `requested` rows; examples/objective_diagnostic.py measures whether that changes anything (on t5-small it does not)."
+      },
+      "embedding_equivalence_max_logit_deviation": 0.0,
+      "note": "The attack differentiates through `inputs_embeds`. This is the maximum absolute logit difference between that path and the model's normal `input_ids` path on this input, checked once per run. It should be at or near zero; a run that got this far did not exceed the adapter's tolerance."
+    },
+    "iterations": [
+      {
+        "iteration": -1,
+        "objective": -9.518292427062988,
+        "position": null,
+        "token_id": null,
+        "tokens_changed": 0,
+        "output_tokens": 6,
+        "stopped_by": "eos",
+        "elapsed_s": 0.0,
+        "note": "benign starting point, before any substitution"
+      },
+      {
+        "iteration": 0,
+        "objective": -17.852188110351562,
+        "position": 8,
+        "token_id": 24839,
+        "tokens_changed": 1,
+        "output_tokens": 10,
+        "stopped_by": "eos",
+        "elapsed_s": 1.397191699999894
+      }
+    ]
+  }
+}

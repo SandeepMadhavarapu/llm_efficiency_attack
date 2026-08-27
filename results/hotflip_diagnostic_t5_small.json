@@ -1,0 +1,1545 @@
+{
+  "environment": {
+    "model": "t5-small",
+    "tokenizer": "T5Tokenizer",
+    "torch": "2.13.0+cpu",
+    "transformers": "5.16.1",
+    "python": "3.12.10",
+    "device": "cpu"
+  },
+  "inputs": [
+    "translate English to German: The house is wonderful.",
+    "translate English to German: She walked to the market this morning.",
+    "translate English to German: The weather today is unusually cold.",
+    "translate English to German: He forgot his keys on the kitchen table.",
+    "translate English to German: They are building a new library downtown.",
+    "summarize: The committee met on Tuesday to review the annual budget report.",
+    "translate English to French: Good morning, how are you today?"
+  ],
+  "seed": 0,
+  "horizon": 8,
+  "objective": "eos_suppression",
+  "protected_prefix_tokens": 7,
+  "embedding_rows": 32128,
+  "legal_token_ids": 31997,
+  "excluded_token_ids": 131,
+  "candidates": 210,
+  "spearman_pooled": 0.09092593612423994,
+  "spearman_within_input_mean": 0.24563801048784362,
+  "spearman_per_input": [
+    {
+      "input": "translate English to German: The house is wonderful.",
+      "n": 30,
+      "spearman": 0.23515016685205783
+    },
+    {
+      "input": "translate English to German: She walked to the market this morning.",
+      "n": 30,
+      "spearman": 0.2378197997775306
+    },
+    {
+      "input": "translate English to German: The weather today is unusually cold.",
+      "n": 30,
+      "spearman": 0.39888765294771966
+    },
+    {
+      "input": "translate English to German: He forgot his keys on the kitchen table.",
+      "n": 30,
+      "spearman": 0.49988876529477194
+    },
+    {
+      "input": "translate English to German: They are building a new library downtown.",
+      "n": 30,
+      "spearman": 0.2053392658509455
+    },
+    {
+      "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+      "n": 30,
+      "spearman": -0.02424916573971079
+    },
+    {
+      "input": "translate English to French: Good morning, how are you today?",
+      "n": 30,
+      "spearman": 0.16662958843159065
+    }
+  ],
+  "sign_agreement": 104,
+  "sign_agreement_fraction": 0.49523809523809526,
+  "estimate_predicts_improvement": 117,
+  "of_those_actually_improve": 45,
+  "top_n": 10,
+  "top_n_mean_true_rank": 89.4,
+  "chance_mean_true_rank": 104.5,
+  "rows": [
+    {
+      "input_index": 0,
+      "position": 8,
+      "token_id": 24839,
+      "estimate": -0.09692983329296112,
+      "exact_delta": -8.333895683288574
+    },
+    {
+      "input_index": 0,
+      "position": 8,
+      "token_id": 1329,
+      "estimate": -0.0061066970229148865,
+      "exact_delta": -0.6705350875854492
+    },
+    {
+      "input_index": 0,
+      "position": 8,
+      "token_id": 31639,
+      "estimate": -0.09211242198944092,
+      "exact_delta": -0.49408435821533203
+    },
+    {
+      "input_index": 0,
+      "position": 9,
+      "token_id": 15925,
+      "estimate": 0.04421805590391159,
+      "exact_delta": 1.6260080337524414
+    },
+    {
+      "input_index": 0,
+      "position": 8,
+      "token_id": 30091,
+      "estimate": -0.2559850215911865,
+      "exact_delta": -3.5445775985717773
+    },
+    {
+      "input_index": 0,
+      "position": 8,
+      "token_id": 31715,
+      "estimate": -0.06906725466251373,
+      "exact_delta": -1.2645292282104492
+    },
+    {
+      "input_index": 0,
+      "position": 8,
+      "token_id": 11735,
+      "estimate": 0.041567377746105194,
+      "exact_delta": -5.522078514099121
+    },
+    {
+      "input_index": 0,
+      "position": 9,
+      "token_id": 29220,
+      "estimate": 0.13926590979099274,
+      "exact_delta": 0.07423019409179688
+    },
+    {
+      "input_index": 0,
+      "position": 7,
+      "token_id": 16540,
+      "estimate": -0.13431447744369507,
+      "exact_delta": 0.7981224060058594
+    },
+    {
+      "input_index": 0,
+      "position": 7,
+      "token_id": 9238,
+      "estimate": -0.03869999945163727,
+      "exact_delta": -1.5251960754394531
+    },
+    {
+      "input_index": 0,
+      "position": 7,
+      "token_id": 24769,
+      "estimate": -0.038727812469005585,
+      "exact_delta": -2.405503273010254
+    },
+    {
+      "input_index": 0,
+      "position": 7,
+      "token_id": 20265,
+      "estimate": -0.03089349903166294,
+      "exact_delta": -2.9872608184814453
+    },
+    {
+      "input_index": 0,
+      "position": 8,
+      "token_id": 29813,
+      "estimate": 0.030353140085935593,
+      "exact_delta": -2.7036237716674805
+    },
+    {
+      "input_index": 0,
+      "position": 9,
+      "token_id": 23110,
+      "estimate": -0.022439438849687576,
+      "exact_delta": 1.2800521850585938
+    },
+    {
+      "input_index": 0,
+      "position": 9,
+      "token_id": 29565,
+      "estimate": -0.012873413041234016,
+      "exact_delta": -3.9503726959228516
+    },
+    {
+      "input_index": 0,
+      "position": 7,
+      "token_id": 10165,
+      "estimate": -0.03159106895327568,
+      "exact_delta": 0.39849376678466797
+    },
+    {
+      "input_index": 0,
+      "position": 7,
+      "token_id": 23918,
+      "estimate": -0.08961902558803558,
+      "exact_delta": 1.3488292694091797
+    },
+    {
+      "input_index": 0,
+      "position": 7,
+      "token_id": 29456,
+      "estimate": -0.16259698569774628,
+      "exact_delta": -0.0008792877197265625
+    },
+    {
+      "input_index": 0,
+      "position": 9,
+      "token_id": 10822,
+      "estimate": -0.05984354019165039,
+      "exact_delta": 1.0801563262939453
+    },
+    {
+      "input_index": 0,
+      "position": 8,
+      "token_id": 18346,
+      "estimate": -0.08573421835899353,
+      "exact_delta": -2.8959884643554688
+    },
+    {
+      "input_index": 0,
+      "position": 7,
+      "token_id": 11596,
+      "estimate": -0.028376756235957146,
+      "exact_delta": 1.0244693756103516
+    },
+    {
+      "input_index": 0,
+      "position": 8,
+      "token_id": 10364,
+      "estimate": -0.2031538188457489,
+      "exact_delta": -3.6525630950927734
+    },
+    {
+      "input_index": 0,
+      "position": 9,
+      "token_id": 20988,
+      "estimate": -0.0676828995347023,
+      "exact_delta": 0.45149993896484375
+    },
+    {
+      "input_index": 0,
+      "position": 7,
+      "token_id": 31676,
+      "estimate": -0.1355353146791458,
+      "exact_delta": 0.643406867980957
+    },
+    {
+      "input_index": 0,
+      "position": 9,
+      "token_id": 15633,
+      "estimate": -0.0364571139216423,
+      "exact_delta": -1.4816970825195312
+    },
+    {
+      "input_index": 0,
+      "position": 8,
+      "token_id": 28357,
+      "estimate": -0.0814792588353157,
+      "exact_delta": -3.9404754638671875
+    },
+    {
+      "input_index": 0,
+      "position": 9,
+      "token_id": 8538,
+      "estimate": 0.0618322379887104,
+      "exact_delta": 2.2847342491149902
+    },
+    {
+      "input_index": 0,
+      "position": 7,
+      "token_id": 26382,
+      "estimate": -0.10210774838924408,
+      "exact_delta": -2.8376541137695312
+    },
+    {
+      "input_index": 0,
+      "position": 9,
+      "token_id": 30018,
+      "estimate": -0.025802165269851685,
+      "exact_delta": 1.3016090393066406
+    },
+    {
+      "input_index": 0,
+      "position": 7,
+      "token_id": 3059,
+      "estimate": -0.0694042444229126,
+      "exact_delta": -0.2167043685913086
+    },
+    {
+      "input_index": 1,
+      "position": 12,
+      "token_id": 27531,
+      "estimate": -0.3001480996608734,
+      "exact_delta": -3.2689085006713867
+    },
+    {
+      "input_index": 1,
+      "position": 10,
+      "token_id": 23276,
+      "estimate": 0.19363847374916077,
+      "exact_delta": -0.38361167907714844
+    },
+    {
+      "input_index": 1,
+      "position": 13,
+      "token_id": 25727,
+      "estimate": 0.10678260773420334,
+      "exact_delta": -1.4311857223510742
+    },
+    {
+      "input_index": 1,
+      "position": 12,
+      "token_id": 20491,
+      "estimate": -0.12867343425750732,
+      "exact_delta": -3.003951072692871
+    },
+    {
+      "input_index": 1,
+      "position": 10,
+      "token_id": 27136,
+      "estimate": -0.0814286395907402,
+      "exact_delta": -1.6329317092895508
+    },
+    {
+      "input_index": 1,
+      "position": 13,
+      "token_id": 10919,
+      "estimate": 0.14902247488498688,
+      "exact_delta": -1.789412498474121
+    },
+    {
+      "input_index": 1,
+      "position": 8,
+      "token_id": 23932,
+      "estimate": -0.006829552352428436,
+      "exact_delta": -1.041433334350586
+    },
+    {
+      "input_index": 1,
+      "position": 9,
+      "token_id": 23059,
+      "estimate": 0.035618141293525696,
+      "exact_delta": -3.5265016555786133
+    },
+    {
+      "input_index": 1,
+      "position": 13,
+      "token_id": 2066,
+      "estimate": 0.09252195060253143,
+      "exact_delta": -1.2935247421264648
+    },
+    {
+      "input_index": 1,
+      "position": 8,
+      "token_id": 30051,
+      "estimate": 0.13231483101844788,
+      "exact_delta": -0.07900047302246094
+    },
+    {
+      "input_index": 1,
+      "position": 11,
+      "token_id": 7267,
+      "estimate": 0.15592163801193237,
+      "exact_delta": 1.072031021118164
+    },
+    {
+      "input_index": 1,
+      "position": 8,
+      "token_id": 26327,
+      "estimate": 0.3421960771083832,
+      "exact_delta": -2.1756162643432617
+    },
+    {
+      "input_index": 1,
+      "position": 8,
+      "token_id": 26321,
+      "estimate": 0.04725516960024834,
+      "exact_delta": -1.9130563735961914
+    },
+    {
+      "input_index": 1,
+      "position": 11,
+      "token_id": 14682,
+      "estimate": 0.12033244967460632,
+      "exact_delta": -0.2790794372558594
+    },
+    {
+      "input_index": 1,
+      "position": 9,
+      "token_id": 28677,
+      "estimate": 0.16869166493415833,
+      "exact_delta": -0.4060382843017578
+    },
+    {
+      "input_index": 1,
+      "position": 11,
+      "token_id": 30570,
+      "estimate": -0.028574112802743912,
+      "exact_delta": 0.9866838455200195
+    },
+    {
+      "input_index": 1,
+      "position": 10,
+      "token_id": 3576,
+      "estimate": 0.12722070515155792,
+      "exact_delta": 0.8840303421020508
+    },
+    {
+      "input_index": 1,
+      "position": 9,
+      "token_id": 18066,
+      "estimate": 0.03657007962465286,
+      "exact_delta": -0.045617103576660156
+    },
+    {
+      "input_index": 1,
+      "position": 9,
+      "token_id": 23155,
+      "estimate": 0.09671911597251892,
+      "exact_delta": -1.269989013671875
+    },
+    {
+      "input_index": 1,
+      "position": 9,
+      "token_id": 26691,
+      "estimate": 0.07182598114013672,
+      "exact_delta": -1.8440303802490234
+    },
+    {
+      "input_index": 1,
+      "position": 11,
+      "token_id": 6661,
+      "estimate": 0.07220229506492615,
+      "exact_delta": -1.9874401092529297
+    },
+    {
+      "input_index": 1,
+      "position": 13,
+      "token_id": 19768,
+      "estimate": 0.06627187132835388,
+      "exact_delta": -0.20946502685546875
+    },
+    {
+      "input_index": 1,
+      "position": 11,
+      "token_id": 19258,
+      "estimate": 0.27251821756362915,
+      "exact_delta": -1.6241016387939453
+    },
+    {
+      "input_index": 1,
+      "position": 9,
+      "token_id": 14584,
+      "estimate": 0.03962206840515137,
+      "exact_delta": -0.28877830505371094
+    },
+    {
+      "input_index": 1,
+      "position": 13,
+      "token_id": 12615,
+      "estimate": 0.06570558249950409,
+      "exact_delta": -1.8126592636108398
+    },
+    {
+      "input_index": 1,
+      "position": 9,
+      "token_id": 18865,
+      "estimate": 0.0049193985760211945,
+      "exact_delta": -0.4409208297729492
+    },
+    {
+      "input_index": 1,
+      "position": 8,
+      "token_id": 9516,
+      "estimate": 0.09175276011228561,
+      "exact_delta": -1.0339431762695312
+    },
+    {
+      "input_index": 1,
+      "position": 8,
+      "token_id": 6208,
+      "estimate": -0.022003915160894394,
+      "exact_delta": -0.7958898544311523
+    },
+    {
+      "input_index": 1,
+      "position": 13,
+      "token_id": 6121,
+      "estimate": 0.10993944853544235,
+      "exact_delta": -0.9261627197265625
+    },
+    {
+      "input_index": 1,
+      "position": 12,
+      "token_id": 8524,
+      "estimate": 0.03690577670931816,
+      "exact_delta": -1.8783464431762695
+    },
+    {
+      "input_index": 2,
+      "position": 10,
+      "token_id": 2266,
+      "estimate": 0.08817249536514282,
+      "exact_delta": 0.2471628189086914
+    },
+    {
+      "input_index": 2,
+      "position": 7,
+      "token_id": 22243,
+      "estimate": 0.01018158346414566,
+      "exact_delta": 0.05280303955078125
+    },
+    {
+      "input_index": 2,
+      "position": 8,
+      "token_id": 28733,
+      "estimate": 0.10587719082832336,
+      "exact_delta": 0.40847206115722656
+    },
+    {
+      "input_index": 2,
+      "position": 8,
+      "token_id": 30260,
+      "estimate": -0.007642082870006561,
+      "exact_delta": 1.1329460144042969
+    },
+    {
+      "input_index": 2,
+      "position": 7,
+      "token_id": 27608,
+      "estimate": 0.01725393533706665,
+      "exact_delta": 0.06563472747802734
+    },
+    {
+      "input_index": 2,
+      "position": 7,
+      "token_id": 29434,
+      "estimate": 0.049746572971343994,
+      "exact_delta": -0.5397052764892578
+    },
+    {
+      "input_index": 2,
+      "position": 12,
+      "token_id": 30250,
+      "estimate": -0.029244882985949516,
+      "exact_delta": 0.6878490447998047
+    },
+    {
+      "input_index": 2,
+      "position": 11,
+      "token_id": 22399,
+      "estimate": 0.07603311538696289,
+      "exact_delta": -0.20670700073242188
+    },
+    {
+      "input_index": 2,
+      "position": 10,
+      "token_id": 27458,
+      "estimate": -0.034238625317811966,
+      "exact_delta": 0.12746524810791016
+    },
+    {
+      "input_index": 2,
+      "position": 12,
+      "token_id": 17192,
+      "estimate": -0.038371145725250244,
+      "exact_delta": -0.5871715545654297
+    },
+    {
+      "input_index": 2,
+      "position": 9,
+      "token_id": 17101,
+      "estimate": 0.23486319184303284,
+      "exact_delta": 1.0094470977783203
+    },
+    {
+      "input_index": 2,
+      "position": 8,
+      "token_id": 27838,
+      "estimate": -0.002690304070711136,
+      "exact_delta": -2.1689109802246094
+    },
+    {
+      "input_index": 2,
+      "position": 8,
+      "token_id": 29331,
+      "estimate": -0.11934804171323776,
+      "exact_delta": -0.010601997375488281
+    },
+    {
+      "input_index": 2,
+      "position": 12,
+      "token_id": 19329,
+      "estimate": 0.03992856293916702,
+      "exact_delta": 1.0451297760009766
+    },
+    {
+      "input_index": 2,
+      "position": 10,
+      "token_id": 18998,
+      "estimate": -0.12109442055225372,
+      "exact_delta": 0.10041618347167969
+    },
+    {
+      "input_index": 2,
+      "position": 9,
+      "token_id": 14767,
+      "estimate": 0.5846474170684814,
+      "exact_delta": 2.7669105529785156
+    },
+    {
+      "input_index": 2,
+      "position": 10,
+      "token_id": 21637,
+      "estimate": -0.02809962071478367,
+      "exact_delta": -0.11240100860595703
+    },
+    {
+      "input_index": 2,
+      "position": 12,
+      "token_id": 22947,
+      "estimate": -0.03297615796327591,
+      "exact_delta": 0.9286012649536133
+    },
+    {
+      "input_index": 2,
+      "position": 9,
+      "token_id": 2702,
+      "estimate": 0.6277779340744019,
+      "exact_delta": 0.7383384704589844
+    },
+    {
+      "input_index": 2,
+      "position": 9,
+      "token_id": 20082,
+      "estimate": 0.39706897735595703,
+      "exact_delta": 1.4216270446777344
+    },
+    {
+      "input_index": 2,
+      "position": 7,
+      "token_id": 15942,
+      "estimate": 0.0021935701370239258,
+      "exact_delta": -1.1670589447021484
+    },
+    {
+      "input_index": 2,
+      "position": 11,
+      "token_id": 20651,
+      "estimate": 0.4720511734485626,
+      "exact_delta": 0.25708961486816406
+    },
+    {
+      "input_index": 2,
+      "position": 9,
+      "token_id": 27694,
+      "estimate": -0.06790009140968323,
+      "exact_delta": 0.8547592163085938
+    },
+    {
+      "input_index": 2,
+      "position": 8,
+      "token_id": 7966,
+      "estimate": 0.18430626392364502,
+      "exact_delta": 0.6459226608276367
+    },
+    {
+      "input_index": 2,
+      "position": 7,
+      "token_id": 23972,
+      "estimate": -0.1061161607503891,
+      "exact_delta": -0.4703521728515625
+    },
+    {
+      "input_index": 2,
+      "position": 9,
+      "token_id": 3841,
+      "estimate": 4.044175148010254e-05,
+      "exact_delta": 1.7115716934204102
+    },
+    {
+      "input_index": 2,
+      "position": 12,
+      "token_id": 7227,
+      "estimate": -0.04671783745288849,
+      "exact_delta": 0.4262542724609375
+    },
+    {
+      "input_index": 2,
+      "position": 9,
+      "token_id": 26039,
+      "estimate": 0.7580927014350891,
+      "exact_delta": 1.474379539489746
+    },
+    {
+      "input_index": 2,
+      "position": 8,
+      "token_id": 10899,
+      "estimate": 0.1586729735136032,
+      "exact_delta": 1.7181482315063477
+    },
+    {
+      "input_index": 2,
+      "position": 10,
+      "token_id": 26738,
+      "estimate": -0.14166870713233948,
+      "exact_delta": 0.4858837127685547
+    },
+    {
+      "input_index": 3,
+      "position": 7,
+      "token_id": 3299,
+      "estimate": 0.015686271712183952,
+      "exact_delta": 0.8719863891601562
+    },
+    {
+      "input_index": 3,
+      "position": 13,
+      "token_id": 4798,
+      "estimate": -0.06553590297698975,
+      "exact_delta": 0.31921863555908203
+    },
+    {
+      "input_index": 3,
+      "position": 13,
+      "token_id": 22864,
+      "estimate": -0.09470663219690323,
+      "exact_delta": -0.21624374389648438
+    },
+    {
+      "input_index": 3,
+      "position": 8,
+      "token_id": 1485,
+      "estimate": -0.11049073934555054,
+      "exact_delta": 1.5346765518188477
+    },
+    {
+      "input_index": 3,
+      "position": 13,
+      "token_id": 18807,
+      "estimate": -0.08470328152179718,
+      "exact_delta": 0.6381187438964844
+    },
+    {
+      "input_index": 3,
+      "position": 12,
+      "token_id": 29822,
+      "estimate": 0.0007989257574081421,
+      "exact_delta": 0.4388256072998047
+    },
+    {
+      "input_index": 3,
+      "position": 11,
+      "token_id": 19734,
+      "estimate": -0.316930890083313,
+      "exact_delta": 0.3821249008178711
+    },
+    {
+      "input_index": 3,
+      "position": 12,
+      "token_id": 2427,
+      "estimate": -0.019872426986694336,
+      "exact_delta": 0.7366628646850586
+    },
+    {
+      "input_index": 3,
+      "position": 7,
+      "token_id": 4080,
+      "estimate": -0.031813040375709534,
+      "exact_delta": 0.3991384506225586
+    },
+    {
+      "input_index": 3,
+      "position": 12,
+      "token_id": 6180,
+      "estimate": -0.026209749281406403,
+      "exact_delta": 0.39108753204345703
+    },
+    {
+      "input_index": 3,
+      "position": 11,
+      "token_id": 27203,
+      "estimate": -0.1279388964176178,
+      "exact_delta": -0.5473804473876953
+    },
+    {
+      "input_index": 3,
+      "position": 11,
+      "token_id": 3925,
+      "estimate": 0.0719594657421112,
+      "exact_delta": 0.6917886734008789
+    },
+    {
+      "input_index": 3,
+      "position": 10,
+      "token_id": 3002,
+      "estimate": 0.0036332979798316956,
+      "exact_delta": 0.9295873641967773
+    },
+    {
+      "input_index": 3,
+      "position": 9,
+      "token_id": 27326,
+      "estimate": -0.0006249379366636276,
+      "exact_delta": 0.20804977416992188
+    },
+    {
+      "input_index": 3,
+      "position": 7,
+      "token_id": 1195,
+      "estimate": -0.09717000275850296,
+      "exact_delta": 0.41915225982666016
+    },
+    {
+      "input_index": 3,
+      "position": 11,
+      "token_id": 711,
+      "estimate": -0.01859627664089203,
+      "exact_delta": -0.012711524963378906
+    },
+    {
+      "input_index": 3,
+      "position": 8,
+      "token_id": 31494,
+      "estimate": -0.050115689635276794,
+      "exact_delta": -0.09922122955322266
+    },
+    {
+      "input_index": 3,
+      "position": 8,
+      "token_id": 23534,
+      "estimate": -0.11091452836990356,
+      "exact_delta": 0.10557746887207031
+    },
+    {
+      "input_index": 3,
+      "position": 7,
+      "token_id": 15706,
+      "estimate": -0.13241249322891235,
+      "exact_delta": 0.7033834457397461
+    },
+    {
+      "input_index": 3,
+      "position": 8,
+      "token_id": 23830,
+      "estimate": 0.10031014680862427,
+      "exact_delta": 1.297205924987793
+    },
+    {
+      "input_index": 3,
+      "position": 13,
+      "token_id": 2004,
+      "estimate": -0.029470035806298256,
+      "exact_delta": 0.7717704772949219
+    },
+    {
+      "input_index": 3,
+      "position": 12,
+      "token_id": 749,
+      "estimate": -0.1772977113723755,
+      "exact_delta": 0.6136198043823242
+    },
+    {
+      "input_index": 3,
+      "position": 11,
+      "token_id": 13949,
+      "estimate": -0.22543156147003174,
+      "exact_delta": -0.17093563079833984
+    },
+    {
+      "input_index": 3,
+      "position": 11,
+      "token_id": 3328,
+      "estimate": -0.1426730453968048,
+      "exact_delta": 0.44017696380615234
+    },
+    {
+      "input_index": 3,
+      "position": 13,
+      "token_id": 8520,
+      "estimate": -0.016127336770296097,
+      "exact_delta": 0.9284124374389648
+    },
+    {
+      "input_index": 3,
+      "position": 7,
+      "token_id": 7239,
+      "estimate": 0.1062101498246193,
+      "exact_delta": 1.1272592544555664
+    },
+    {
+      "input_index": 3,
+      "position": 7,
+      "token_id": 21201,
+      "estimate": -0.044830210506916046,
+      "exact_delta": 0.9365119934082031
+    },
+    {
+      "input_index": 3,
+      "position": 9,
+      "token_id": 11481,
+      "estimate": 0.11349441111087799,
+      "exact_delta": 1.506551742553711
+    },
+    {
+      "input_index": 3,
+      "position": 10,
+      "token_id": 5911,
+      "estimate": 0.032262176275253296,
+      "exact_delta": 0.6131162643432617
+    },
+    {
+      "input_index": 3,
+      "position": 7,
+      "token_id": 16506,
+      "estimate": -0.13101348280906677,
+      "exact_delta": 0.19049644470214844
+    },
+    {
+      "input_index": 4,
+      "position": 10,
+      "token_id": 1293,
+      "estimate": -0.08999230712652206,
+      "exact_delta": -2.317728042602539
+    },
+    {
+      "input_index": 4,
+      "position": 11,
+      "token_id": 3309,
+      "estimate": -0.3035877048969269,
+      "exact_delta": 0.5770063400268555
+    },
+    {
+      "input_index": 4,
+      "position": 12,
+      "token_id": 12824,
+      "estimate": -0.7075285911560059,
+      "exact_delta": 0.01215362548828125
+    },
+    {
+      "input_index": 4,
+      "position": 8,
+      "token_id": 8527,
+      "estimate": -0.08095163106918335,
+      "exact_delta": 0.4936199188232422
+    },
+    {
+      "input_index": 4,
+      "position": 9,
+      "token_id": 29638,
+      "estimate": 0.010770688764750957,
+      "exact_delta": 0.9143075942993164
+    },
+    {
+      "input_index": 4,
+      "position": 12,
+      "token_id": 15411,
+      "estimate": -0.4297281503677368,
+      "exact_delta": 0.9424715042114258
+    },
+    {
+      "input_index": 4,
+      "position": 13,
+      "token_id": 29569,
+      "estimate": 0.010962016880512238,
+      "exact_delta": 0.8952875137329102
+    },
+    {
+      "input_index": 4,
+      "position": 11,
+      "token_id": 5554,
+      "estimate": -0.10960264503955841,
+      "exact_delta": -0.44324779510498047
+    },
+    {
+      "input_index": 4,
+      "position": 12,
+      "token_id": 22044,
+      "estimate": -0.4408227205276489,
+      "exact_delta": -3.126697540283203
+    },
+    {
+      "input_index": 4,
+      "position": 8,
+      "token_id": 31674,
+      "estimate": -0.10173696279525757,
+      "exact_delta": 1.3864707946777344
+    },
+    {
+      "input_index": 4,
+      "position": 13,
+      "token_id": 1905,
+      "estimate": 0.022636303678154945,
+      "exact_delta": 1.1205387115478516
+    },
+    {
+      "input_index": 4,
+      "position": 13,
+      "token_id": 22160,
+      "estimate": -0.00043105706572532654,
+      "exact_delta": 1.2033185958862305
+    },
+    {
+      "input_index": 4,
+      "position": 8,
+      "token_id": 27705,
+      "estimate": -0.09364452958106995,
+      "exact_delta": 0.7705974578857422
+    },
+    {
+      "input_index": 4,
+      "position": 8,
+      "token_id": 11219,
+      "estimate": -0.050339728593826294,
+      "exact_delta": 2.650540351867676
+    },
+    {
+      "input_index": 4,
+      "position": 11,
+      "token_id": 8217,
+      "estimate": -1.0780689716339111,
+      "exact_delta": -0.647059440612793
+    },
+    {
+      "input_index": 4,
+      "position": 7,
+      "token_id": 19558,
+      "estimate": -0.07375699281692505,
+      "exact_delta": 0.9567279815673828
+    },
+    {
+      "input_index": 4,
+      "position": 10,
+      "token_id": 21813,
+      "estimate": -0.002179706934839487,
+      "exact_delta": 1.061854362487793
+    },
+    {
+      "input_index": 4,
+      "position": 8,
+      "token_id": 435,
+      "estimate": -0.03370510786771774,
+      "exact_delta": 0.5775423049926758
+    },
+    {
+      "input_index": 4,
+      "position": 10,
+      "token_id": 22327,
+      "estimate": -0.012703128159046173,
+      "exact_delta": -1.2325725555419922
+    },
+    {
+      "input_index": 4,
+      "position": 10,
+      "token_id": 29497,
+      "estimate": 0.1709272861480713,
+      "exact_delta": 0.6795644760131836
+    },
+    {
+      "input_index": 4,
+      "position": 11,
+      "token_id": 28668,
+      "estimate": 0.14045284688472748,
+      "exact_delta": -1.0575456619262695
+    },
+    {
+      "input_index": 4,
+      "position": 11,
+      "token_id": 30068,
+      "estimate": -0.6636120080947876,
+      "exact_delta": 0.007595062255859375
+    },
+    {
+      "input_index": 4,
+      "position": 13,
+      "token_id": 21551,
+      "estimate": 0.06711375713348389,
+      "exact_delta": 1.3519983291625977
+    },
+    {
+      "input_index": 4,
+      "position": 11,
+      "token_id": 22639,
+      "estimate": -0.26049813628196716,
+      "exact_delta": 0.826904296875
+    },
+    {
+      "input_index": 4,
+      "position": 7,
+      "token_id": 15009,
+      "estimate": -0.035666488111019135,
+      "exact_delta": -0.15958595275878906
+    },
+    {
+      "input_index": 4,
+      "position": 12,
+      "token_id": 2594,
+      "estimate": 0.2131519913673401,
+      "exact_delta": -1.1884899139404297
+    },
+    {
+      "input_index": 4,
+      "position": 7,
+      "token_id": 17839,
+      "estimate": -0.28082001209259033,
+      "exact_delta": 0.40024566650390625
+    },
+    {
+      "input_index": 4,
+      "position": 8,
+      "token_id": 24977,
+      "estimate": 0.04195762425661087,
+      "exact_delta": 0.9252233505249023
+    },
+    {
+      "input_index": 4,
+      "position": 10,
+      "token_id": 11544,
+      "estimate": -0.09722496569156647,
+      "exact_delta": -0.8498907089233398
+    },
+    {
+      "input_index": 4,
+      "position": 11,
+      "token_id": 9436,
+      "estimate": -0.35369178652763367,
+      "exact_delta": 1.11993408203125
+    },
+    {
+      "input_index": 5,
+      "position": 12,
+      "token_id": 11773,
+      "estimate": 0.07123427838087082,
+      "exact_delta": -0.24285221099853516
+    },
+    {
+      "input_index": 5,
+      "position": 11,
+      "token_id": 31031,
+      "estimate": -0.16633877158164978,
+      "exact_delta": 0.10892486572265625
+    },
+    {
+      "input_index": 5,
+      "position": 12,
+      "token_id": 27979,
+      "estimate": 0.37394142150878906,
+      "exact_delta": 0.3595876693725586
+    },
+    {
+      "input_index": 5,
+      "position": 11,
+      "token_id": 4339,
+      "estimate": -0.07406388968229294,
+      "exact_delta": -0.2923898696899414
+    },
+    {
+      "input_index": 5,
+      "position": 12,
+      "token_id": 10170,
+      "estimate": 0.5288065075874329,
+      "exact_delta": -0.16553783416748047
+    },
+    {
+      "input_index": 5,
+      "position": 10,
+      "token_id": 24529,
+      "estimate": 0.04614395275712013,
+      "exact_delta": 0.3858327865600586
+    },
+    {
+      "input_index": 5,
+      "position": 10,
+      "token_id": 27164,
+      "estimate": 0.15113966166973114,
+      "exact_delta": 0.38756561279296875
+    },
+    {
+      "input_index": 5,
+      "position": 12,
+      "token_id": 2648,
+      "estimate": 0.16353577375411987,
+      "exact_delta": -0.10413265228271484
+    },
+    {
+      "input_index": 5,
+      "position": 7,
+      "token_id": 19486,
+      "estimate": 0.18700814247131348,
+      "exact_delta": 0.8203287124633789
+    },
+    {
+      "input_index": 5,
+      "position": 8,
+      "token_id": 22894,
+      "estimate": 0.03188119828701019,
+      "exact_delta": 1.7647428512573242
+    },
+    {
+      "input_index": 5,
+      "position": 9,
+      "token_id": 5248,
+      "estimate": -0.08030641078948975,
+      "exact_delta": 0.7374048233032227
+    },
+    {
+      "input_index": 5,
+      "position": 8,
+      "token_id": 7313,
+      "estimate": 0.22629980742931366,
+      "exact_delta": 0.16045379638671875
+    },
+    {
+      "input_index": 5,
+      "position": 12,
+      "token_id": 14687,
+      "estimate": 0.46363624930381775,
+      "exact_delta": -0.3891305923461914
+    },
+    {
+      "input_index": 5,
+      "position": 10,
+      "token_id": 23279,
+      "estimate": 0.008924528956413269,
+      "exact_delta": 0.147430419921875
+    },
+    {
+      "input_index": 5,
+      "position": 12,
+      "token_id": 18620,
+      "estimate": 0.37681496143341064,
+      "exact_delta": -0.10264110565185547
+    },
+    {
+      "input_index": 5,
+      "position": 13,
+      "token_id": 13582,
+      "estimate": -0.501460075378418,
+      "exact_delta": -0.517827033996582
+    },
+    {
+      "input_index": 5,
+      "position": 7,
+      "token_id": 13184,
+      "estimate": -0.02069155126810074,
+      "exact_delta": 1.0132818222045898
+    },
+    {
+      "input_index": 5,
+      "position": 13,
+      "token_id": 23000,
+      "estimate": -1.0012379884719849,
+      "exact_delta": 2.2355823516845703
+    },
+    {
+      "input_index": 5,
+      "position": 11,
+      "token_id": 13707,
+      "estimate": -0.13290639221668243,
+      "exact_delta": 0.44449806213378906
+    },
+    {
+      "input_index": 5,
+      "position": 13,
+      "token_id": 21701,
+      "estimate": -0.9102944731712341,
+      "exact_delta": -0.5651950836181641
+    },
+    {
+      "input_index": 5,
+      "position": 12,
+      "token_id": 1535,
+      "estimate": 0.44625961780548096,
+      "exact_delta": 0.167816162109375
+    },
+    {
+      "input_index": 5,
+      "position": 8,
+      "token_id": 14596,
+      "estimate": 0.17197245359420776,
+      "exact_delta": 0.4701194763183594
+    },
+    {
+      "input_index": 5,
+      "position": 7,
+      "token_id": 8497,
+      "estimate": -0.12786060571670532,
+      "exact_delta": 0.36594200134277344
+    },
+    {
+      "input_index": 5,
+      "position": 12,
+      "token_id": 5170,
+      "estimate": 0.20125506818294525,
+      "exact_delta": 0.018062591552734375
+    },
+    {
+      "input_index": 5,
+      "position": 10,
+      "token_id": 17290,
+      "estimate": -0.021110666915774345,
+      "exact_delta": 0.37987327575683594
+    },
+    {
+      "input_index": 5,
+      "position": 10,
+      "token_id": 29757,
+      "estimate": 0.1732584685087204,
+      "exact_delta": 0.7626428604125977
+    },
+    {
+      "input_index": 5,
+      "position": 11,
+      "token_id": 19794,
+      "estimate": -0.09906693547964096,
+      "exact_delta": 0.09347820281982422
+    },
+    {
+      "input_index": 5,
+      "position": 7,
+      "token_id": 16209,
+      "estimate": 0.30397307872772217,
+      "exact_delta": 1.7880191802978516
+    },
+    {
+      "input_index": 5,
+      "position": 9,
+      "token_id": 10228,
+      "estimate": 0.03220663219690323,
+      "exact_delta": 0.6127729415893555
+    },
+    {
+      "input_index": 5,
+      "position": 13,
+      "token_id": 15302,
+      "estimate": -1.5395164489746094,
+      "exact_delta": 0.1157846450805664
+    },
+    {
+      "input_index": 6,
+      "position": 7,
+      "token_id": 26513,
+      "estimate": -0.13342756032943726,
+      "exact_delta": 0.9629240036010742
+    },
+    {
+      "input_index": 6,
+      "position": 10,
+      "token_id": 6163,
+      "estimate": 0.2245996594429016,
+      "exact_delta": 2.1768598556518555
+    },
+    {
+      "input_index": 6,
+      "position": 11,
+      "token_id": 31559,
+      "estimate": -0.4260491132736206,
+      "exact_delta": 0.8247213363647461
+    },
+    {
+      "input_index": 6,
+      "position": 12,
+      "token_id": 2738,
+      "estimate": 0.08656652271747589,
+      "exact_delta": 0.9858694076538086
+    },
+    {
+      "input_index": 6,
+      "position": 12,
+      "token_id": 4279,
+      "estimate": 0.016826771199703217,
+      "exact_delta": 0.6389055252075195
+    },
+    {
+      "input_index": 6,
+      "position": 7,
+      "token_id": 13169,
+      "estimate": -0.11438815295696259,
+      "exact_delta": 1.4921817779541016
+    },
+    {
+      "input_index": 6,
+      "position": 12,
+      "token_id": 13683,
+      "estimate": -0.25998127460479736,
+      "exact_delta": -0.3251352310180664
+    },
+    {
+      "input_index": 6,
+      "position": 9,
+      "token_id": 114,
+      "estimate": 0.024170488119125366,
+      "exact_delta": 0.3384265899658203
+    },
+    {
+      "input_index": 6,
+      "position": 8,
+      "token_id": 471,
+      "estimate": -0.10147201269865036,
+      "exact_delta": 1.0246820449829102
+    },
+    {
+      "input_index": 6,
+      "position": 12,
+      "token_id": 24734,
+      "estimate": -0.11402972042560577,
+      "exact_delta": -0.1603851318359375
+    },
+    {
+      "input_index": 6,
+      "position": 7,
+      "token_id": 26962,
+      "estimate": -0.08397023379802704,
+      "exact_delta": 2.5618343353271484
+    },
+    {
+      "input_index": 6,
+      "position": 12,
+      "token_id": 17315,
+      "estimate": 0.0799795538187027,
+      "exact_delta": 0.7975730895996094
+    },
+    {
+      "input_index": 6,
+      "position": 11,
+      "token_id": 3207,
+      "estimate": -0.021117523312568665,
+      "exact_delta": 1.0269927978515625
+    },
+    {
+      "input_index": 6,
+      "position": 8,
+      "token_id": 3899,
+      "estimate": -0.04610397666692734,
+      "exact_delta": 0.8963413238525391
+    },
+    {
+      "input_index": 6,
+      "position": 11,
+      "token_id": 21278,
+      "estimate": -0.26771554350852966,
+      "exact_delta": 1.6736507415771484
+    },
+    {
+      "input_index": 6,
+      "position": 8,
+      "token_id": 28630,
+      "estimate": 0.1716153919696808,
+      "exact_delta": 0.6891622543334961
+    },
+    {
+      "input_index": 6,
+      "position": 9,
+      "token_id": 9177,
+      "estimate": -0.05299760401248932,
+      "exact_delta": -0.22836685180664062
+    },
+    {
+      "input_index": 6,
+      "position": 12,
+      "token_id": 5974,
+      "estimate": 0.2033841907978058,
+      "exact_delta": 1.5769987106323242
+    },
+    {
+      "input_index": 6,
+      "position": 7,
+      "token_id": 15587,
+      "estimate": -0.03903760388493538,
+      "exact_delta": 1.0126075744628906
+    },
+    {
+      "input_index": 6,
+      "position": 10,
+      "token_id": 20569,
+      "estimate": 0.14009127020835876,
+      "exact_delta": 3.083688735961914
+    },
+    {
+      "input_index": 6,
+      "position": 7,
+      "token_id": 718,
+      "estimate": -0.07764782011508942,
+      "exact_delta": 1.8560428619384766
+    },
+    {
+      "input_index": 6,
+      "position": 9,
+      "token_id": 29949,
+      "estimate": -0.03498293459415436,
+      "exact_delta": 2.118314743041992
+    },
+    {
+      "input_index": 6,
+      "position": 10,
+      "token_id": 26211,
+      "estimate": 0.21292102336883545,
+      "exact_delta": 0.8362503051757812
+    },
+    {
+      "input_index": 6,
+      "position": 7,
+      "token_id": 28228,
+      "estimate": -0.004409525543451309,
+      "exact_delta": -0.43742847442626953
+    },
+    {
+      "input_index": 6,
+      "position": 9,
+      "token_id": 4374,
+      "estimate": 0.08143230527639389,
+      "exact_delta": 2.051633834838867
+    },
+    {
+      "input_index": 6,
+      "position": 12,
+      "token_id": 17070,
+      "estimate": 0.03205077722668648,
+      "exact_delta": 0.8849630355834961
+    },
+    {
+      "input_index": 6,
+      "position": 12,
+      "token_id": 21136,
+      "estimate": 0.08909708261489868,
+      "exact_delta": 1.4653692245483398
+    },
+    {
+      "input_index": 6,
+      "position": 9,
+      "token_id": 3774,
+      "estimate": 0.025634080171585083,
+      "exact_delta": 1.9455804824829102
+    },
+    {
+      "input_index": 6,
+      "position": 8,
+      "token_id": 9125,
+      "estimate": -0.02129175513982773,
+      "exact_delta": 1.382491111755371
+    },
+    {
+      "input_index": 6,
+      "position": 7,
+      "token_id": 1389,
+      "estimate": -0.02010943740606308,
+      "exact_delta": 1.4565401077270508
+    }
+  ]
+}
