@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llm_efficiency_attack"
+version = "0.1.0"
+description = "White-box efficiency attacks against Hugging Face sequence models."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Sandeep Madhavarapu" }]
+keywords = ["adversarial", "efficiency", "nlp", "transformers", "white-box"]
+
+# Pinned to the versions this was developed and tested against. Lower bounds are
+# real requirements rather than guesses: `torch>=2.0` for the current autograd
+# behaviour used by the HotFlip step, and `transformers>=4.40` for the
+# `inputs_embeds` path through `generate()` that the seq2seq adapter relies on.
+dependencies = [
+    "torch>=2.0,<3.0",
+    "transformers>=4.40,<6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+# `sentencepiece` is not a hard dependency of this package, but T5's tokenizer
+# needs it, so the quickstart does. Kept separate so attacking a model with a
+# fast tokenizer does not drag it in.
+examples = [
+    "sentencepiece>=0.2.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
