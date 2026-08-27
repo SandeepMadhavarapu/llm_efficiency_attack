@@ -56,9 +56,16 @@ pytest
 
 ## How the attack works
 
-Inference cost is dominated by **how many decoding steps** the model runs, not by
-how long the input is. Decoding stops when the model emits an end-of-sequence
-token. So the attack objective is: **make the model unwilling to stop.**
+For a fixed model and prompt setting, **generated-token count is a reproducible
+proxy for autoregressive decoding work**: each generated token costs one decoder
+forward pass, and decoding stops when the model emits an end-of-sequence token.
+So the attack objective is: **make the model unwilling to stop.**
+
+It is a proxy, not a measurement of latency or total compute — per-step cost
+grows with the KV cache and varies with hardware and batching. Token count is the
+primary metric because it is deterministic and hardware-independent; wall-clock
+time is reported alongside it but is noisy enough at these output lengths to be
+uninformative.
 
 The obstacle is that the input is a sequence of discrete token ids while gradients
 live in continuous embedding space, so the input cannot simply be stepped. The
@@ -69,9 +76,10 @@ loop is HotFlip:
    any vocabulary token: `(e_v − e_i) · ∇_i`. This is a single matmul against the
    embedding table, so the whole vocabulary is scored at once.
 3. Take the top-`k` candidates by that estimate and re-score them **exactly** with
-   real objective evaluations. The linear approximation ranks well enough to be
-   worth using but its magnitudes are unreliable, so nothing is committed on its
-   word alone.
+   real objective evaluations. The linear approximation is used only to shortlist
+   candidates; every shortlisted substitution is re-scored exactly because the
+   approximation is weak on the tested model. Nothing is committed on the
+   estimate's word alone.
 4. Commit the single best substitution. Repeat until the perturbation budget is
    spent or no candidate improves the objective.
 
