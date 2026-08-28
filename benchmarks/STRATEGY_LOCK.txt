@@ -1,0 +1,60 @@
+Locked evaluation specification
+===============================
+Written BEFORE any held-out result was observed. The held-out benchmark had not
+been run through any model at the time this file was created.
+
+benchmark      : benchmarks/heldout_seq2seq_v1.json
+benchmark sha256: 9cc6170a3441fa67c2c8602213d66fb1e4fdccaf14efddcb8d835f5031fd390c
+n              : 24
+model          : t5-small
+device         : cpu
+
+strategies (all three evaluated, none may be dropped after the fact):
+  1. gradient              -- global top-k over the flattened score matrix (original)
+  2. gradient_stratified   -- round-robin across positions (developed this round)
+  3. random                -- uniform over the identical legal candidate space
+
+config (identical for all three):
+  objective               = eos_suppression
+  max_iterations          = 6
+  perturbation_budget     = 3
+  top_k                   = 20
+  max_new_tokens          = 128
+  objective_horizon       = 8
+  protected_prefix_tokens = 7
+  seed                    = 0
+
+single candidate budget (top_k=20) and a single seed, deliberately: one
+comparison, not a sweep, so there is no multiple-comparison slack.
+
+fairness: all three strategies perform exactly top_k exact objective evaluations
+per iteration over the same legal candidate space, the same allowed positions,
+the same iteration cap and the same budget. Compute actually consumed
+(objective evaluations, search forwards, total forwards) is reported alongside
+effectiveness, because equal candidate counts do not imply equal compute -- the
+gradient variants additionally pay one backward pass and one extra objective
+evaluation per iteration.
+
+stopping rule: unchanged from production -- commit only strictly improving
+substitutions; halt when the budget is exhausted, iterations run out, or no
+admissible candidate improves.
+
+metrics: n, mean/median benign and adversarial length, mean/median delta,
+improved/unchanged/worsened counts, censoring counts, Hamming distribution,
+budget utilisation, zero-edit rate, objective evaluations, search forwards,
+total forwards, wall time (secondary). Bootstrap 95% CIs (10000 resamples,
+seed 0) for mean delta and for paired strategy differences.
+
+commitment: this evaluation is run exactly once. Results are reported in full for
+all 24 inputs with no filtering, no prompt replacement, no seed replacement and
+no post-hoc budget or top_k change. If a correctness bug invalidates the run, the
+entire evaluation is rerun after the fix -- never selectively.
+
+development evidence that produced gradient_stratified (n=7 dev set, NOT held out):
+  top_k=5   gradient +3.29 (ham 1.14) | stratified +1.57 (ham 1.86) | random +5.00 (ham 1.29)
+  top_k=20  gradient +2.29 (ham 1.29) | stratified +3.14 (ham 2.43) | random +6.14 (ham 2.29)
+  -> the stratified variant raised budget utilisation as predicted but did not
+     close the gap to random, and was worse at top_k=5. Locked for held-out
+     evaluation anyway, because dropping a variant after seeing development
+     results and before the confirmatory run is exactly the selection this
+     protocol exists to prevent.

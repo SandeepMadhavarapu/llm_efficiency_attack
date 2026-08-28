@@ -234,8 +234,8 @@ def main() -> None:
 
     print(f"Spearman rho(estimate, exact delta), pooled : {rho_pooled:+.3f}")
     print(f"Spearman rho, within input then averaged    : {rho_within:+.3f}")
-    print(f"  positive rho confirms the sign convention: most-negative estimates")
-    print(f"  are the substitutions that most reduce the objective.\n")
+    print("  positive rho confirms the sign convention: most-negative estimates")
+    print("  are the substitutions that most reduce the objective.\n")
     print(f"sign agreement                : {agree}/{len(rows)} = {agree/len(rows):.1%}")
     print(f"estimate predicts improvement : {predicted_improve} candidates")
     print(f"  of those, actually improve  : {truly_improve} "

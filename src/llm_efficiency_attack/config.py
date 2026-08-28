@@ -26,7 +26,7 @@ import torch
 # identical number of exact evaluations over the identical candidate space while
 # ignoring the gradient, so comparing the two is what shows whether the white-box
 # signal is actually doing any work.
-STRATEGIES = ("gradient", "random")
+STRATEGIES = ("gradient", "gradient_stratified", "random")
 
 
 @dataclass(frozen=True)
@@ -35,8 +35,12 @@ class AttackConfig:
 
     Attributes:
         objective: Name of the attack objective, resolved in `objectives.py`.
-        strategy: `"gradient"` for the white-box attack, `"random"` for the
-            control that substitutes tokens uniformly at random.
+        strategy: `"gradient"` for the white-box attack as originally
+            implemented, `"gradient_stratified"` for the same first-order scores
+            distributed across token positions rather than taken as a global
+            top-k, `"random"` for the control that substitutes tokens uniformly
+            at random. See `objectives.py` and RESULTS.md for the measured
+            difference between the two gradient variants.
         max_iterations: Upper bound on optimisation steps. Each step commits at
             most one token substitution.
         perturbation_budget: Maximum number of *distinct token positions* the

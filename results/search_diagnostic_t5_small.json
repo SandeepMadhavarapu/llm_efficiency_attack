@@ -1,0 +1,491 @@
+{
+  "environment": {
+    "model": "t5-small",
+    "torch": "2.13.0+cpu",
+    "transformers": "5.16.1",
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "seed": 0,
+  "top_k": 20,
+  "horizon": 8,
+  "samples_per_position": 25,
+  "inputs": [
+    "translate English to German: The house is wonderful.",
+    "translate English to German: She walked to the market this morning.",
+    "translate English to German: The weather today is unusually cold.",
+    "summarize: The committee met on Tuesday to review the annual budget report."
+  ],
+  "per_input": [
+    {
+      "input": "translate English to German: The house is wonderful.",
+      "positions": 3,
+      "reference_candidates": 75,
+      "legal_vocabulary": 31997,
+      "coverage_fraction": 0.0002083528664145597,
+      "base_objective": -9.518292427062988,
+      "reference_best_delta": -6.974671363830566,
+      "reference_best_position": 8,
+      "reference_mean_delta": -0.9917585500081381,
+      "reference_improving_fraction": 0.56,
+      "gradient_proposals": 20,
+      "gradient_distinct_positions": 1,
+      "gradient_top_position_share": 1.0,
+      "gradient_rejected_by_round_trip": 0,
+      "gradient_best_delta": -7.146058082580566,
+      "gradient_best_position": 8,
+      "gradient_best_percentile": 0.0,
+      "gradient_median_percentile": 22.666666666666664,
+      "gradient_picked_reference_best_position": true,
+      "best_delta_at_gradient_position": -6.974671363830566,
+      "position_error": 0.0,
+      "token_error": -0.17138671875
+    },
+    {
+      "input": "translate English to German: She walked to the market this morning.",
+      "positions": 7,
+      "reference_candidates": 156,
+      "legal_vocabulary": 31997,
+      "coverage_fraction": 8.929408560623987e-05,
+      "base_objective": -11.089737892150879,
+      "reference_best_delta": -3.918951988220215,
+      "reference_best_position": 9,
+      "reference_mean_delta": -1.0087415255033052,
+      "reference_improving_fraction": 0.8525641025641025,
+      "gradient_proposals": 20,
+      "gradient_distinct_positions": 2,
+      "gradient_top_position_share": 0.9,
+      "gradient_rejected_by_round_trip": 0,
+      "gradient_best_delta": -3.6483802795410156,
+      "gradient_best_position": 12,
+      "gradient_best_percentile": 1.2820512820512822,
+      "gradient_median_percentile": 30.128205128205128,
+      "gradient_picked_reference_best_position": false,
+      "best_delta_at_gradient_position": -3.7405786514282227,
+      "position_error": 0.1783733367919922,
+      "token_error": 0.09219837188720703
+    },
+    {
+      "input": "translate English to German: The weather today is unusually cold.",
+      "positions": 6,
+      "reference_candidates": 150,
+      "legal_vocabulary": 31997,
+      "coverage_fraction": 0.00010417643320727985,
+      "base_objective": -14.286733627319336,
+      "reference_best_delta": -2.537872314453125,
+      "reference_best_position": 8,
+      "reference_mean_delta": 0.45864816665649416,
+      "reference_improving_fraction": 0.29333333333333333,
+      "gradient_proposals": 20,
+      "gradient_distinct_positions": 1,
+      "gradient_top_position_share": 1.0,
+      "gradient_rejected_by_round_trip": 0,
+      "gradient_best_delta": -1.639023780822754,
+      "gradient_best_position": 9,
+      "gradient_best_percentile": 1.3333333333333333,
+      "gradient_median_percentile": 66.0,
+      "gradient_picked_reference_best_position": false,
+      "best_delta_at_gradient_position": -0.3869800567626953,
+      "position_error": 2.1508922576904297,
+      "token_error": -1.2520437240600586
+    },
+    {
+      "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+      "positions": 7,
+      "reference_candidates": 174,
+      "legal_vocabulary": 31997,
+      "coverage_fraction": 8.929408560623987e-05,
+      "base_objective": -10.201513290405273,
+      "reference_best_delta": -0.8054513931274414,
+      "reference_best_position": 11,
+      "reference_mean_delta": 0.3354123269004383,
+      "reference_improving_fraction": 0.3160919540229885,
+      "gradient_proposals": 20,
+      "gradient_distinct_positions": 1,
+      "gradient_top_position_share": 1.0,
+      "gradient_rejected_by_round_trip": 0,
+      "gradient_best_delta": -1.0394840240478516,
+      "gradient_best_position": 13,
+      "gradient_best_percentile": 0.0,
+      "gradient_median_percentile": 10.344827586206897,
+      "gradient_picked_reference_best_position": false,
+      "best_delta_at_gradient_position": -0.6125202178955078,
+      "position_error": 0.1929311752319336,
+      "token_error": -0.42696380615234375
+    }
+  ],
+  "objective_to_cost": {
+    "input": "translate English to German: The house is wonderful.",
+    "pairs": [
+      {
+        "delta_objective": -0.9586458206176758,
+        "delta_tokens": 2
+      },
+      {
+        "delta_objective": -0.09193706512451172,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -4.495355606079102,
+        "delta_tokens": 6
+      },
+      {
+        "delta_objective": -7.6423444747924805,
+        "delta_tokens": 3
+      },
+      {
+        "delta_objective": 1.2533340454101562,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -3.3345108032226562,
+        "delta_tokens": 4
+      },
+      {
+        "delta_objective": 1.2129745483398438,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 1.5068378448486328,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 1.0714797973632812,
+        "delta_tokens": 2
+      },
+      {
+        "delta_objective": 1.3017082214355469,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 1.0252971649169922,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": 2.188976764678955,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 0.22957706451416016,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -1.538564682006836,
+        "delta_tokens": 7
+      },
+      {
+        "delta_objective": -2.5307302474975586,
+        "delta_tokens": 2
+      },
+      {
+        "delta_objective": -0.9969758987426758,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": -0.23670005798339844,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -0.12889766693115234,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 1.3599567413330078,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 0.6722240447998047,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": -0.1967020034790039,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -0.6189155578613281,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": 0.6771259307861328,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 2.4722647666931152,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": -3.2611160278320312,
+        "delta_tokens": 4
+      },
+      {
+        "delta_objective": -1.3911676406860352,
+        "delta_tokens": 7
+      },
+      {
+        "delta_objective": 0.8945827484130859,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 1.5742125511169434,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": 1.6669869422912598,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -1.5804567337036133,
+        "delta_tokens": 7
+      },
+      {
+        "delta_objective": 0.7222080230712891,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -1.6469411849975586,
+        "delta_tokens": 7
+      },
+      {
+        "delta_objective": 0.818603515625,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -0.8326654434204102,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": 0.9117498397827148,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 0.7142505645751953,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -4.761068344116211,
+        "delta_tokens": 3
+      },
+      {
+        "delta_objective": 1.3762092590332031,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -2.960206985473633,
+        "delta_tokens": 3
+      },
+      {
+        "delta_objective": 2.0021257400512695,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -0.1395435333251953,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": 0.8104724884033203,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 1.1869640350341797,
+        "delta_tokens": 2
+      },
+      {
+        "delta_objective": 1.4530763626098633,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 1.1584186553955078,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 0.06598472595214844,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 0.7097673416137695,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": -2.373323440551758,
+        "delta_tokens": 3
+      },
+      {
+        "delta_objective": -1.4691352844238281,
+        "delta_tokens": 7
+      },
+      {
+        "delta_objective": 0.3763008117675781,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -0.05754661560058594,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": 0.6929998397827148,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 0.36156272888183594,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -1.1361322402954102,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": 1.0901355743408203,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 0.9273061752319336,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": -0.11956310272216797,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": 2.0691704750061035,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -8.1016263961792,
+        "delta_tokens": 3
+      },
+      {
+        "delta_objective": -7.501885414123535,
+        "delta_tokens": 4
+      },
+      {
+        "delta_objective": 1.4734249114990234,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -0.6346025466918945,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": -0.9941377639770508,
+        "delta_tokens": 2
+      },
+      {
+        "delta_objective": 0.21073150634765625,
+        "delta_tokens": 2
+      },
+      {
+        "delta_objective": -3.4038076400756836,
+        "delta_tokens": 3
+      },
+      {
+        "delta_objective": -2.7615957260131836,
+        "delta_tokens": 6
+      },
+      {
+        "delta_objective": 0.9728517532348633,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -1.0809812545776367,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": 0.24266529083251953,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": 1.3490219116210938,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": -1.8542146682739258,
+        "delta_tokens": 4
+      },
+      {
+        "delta_objective": -0.7880878448486328,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 1.1992607116699219,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 0.792811393737793,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": -2.1882495880126953,
+        "delta_tokens": 3
+      },
+      {
+        "delta_objective": -1.372955322265625,
+        "delta_tokens": 7
+      },
+      {
+        "delta_objective": 0.3904542922973633,
+        "delta_tokens": 0
+      },
+      {
+        "delta_objective": 1.2232894897460938,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": 2.6611647605895996,
+        "delta_tokens": 1
+      },
+      {
+        "delta_objective": -1.535243034362793,
+        "delta_tokens": 7
+      }
+    ],
+    "n": 80,
+    "n_objective_improving": 37,
+    "of_those_cost_increased": 32,
+    "of_those_cost_decreased": 0,
+    "mean_token_change_among_improving": 3.054054054054054
+  },
+  "budget_utilisation": {
+    "gradient_k5": {
+      "runs": 7,
+      "zero_edit": 1,
+      "hamming_below_budget": 6,
+      "mean_hamming": 1.1428571428571428,
+      "budget": 3
+    },
+    "random_k5": {
+      "runs": 7,
+      "zero_edit": 2,
+      "hamming_below_budget": 6,
+      "mean_hamming": 1.2857142857142858,
+      "budget": 3
+    },
+    "gradient_k20": {
+      "runs": 7,
+      "zero_edit": 0,
+      "hamming_below_budget": 6,
+      "mean_hamming": 1.2857142857142858,
+      "budget": 3
+    },
+    "random_k20": {
+      "runs": 7,
+      "zero_edit": 0,
+      "hamming_below_budget": 4,
+      "mean_hamming": 2.2857142857142856,
+      "budget": 3
+    },
+    "gradient_k100": {
+      "runs": 7,
+      "zero_edit": 0,
+      "hamming_below_budget": 7,
+      "mean_hamming": 1.4285714285714286,
+      "budget": 3
+    },
+    "random_k100": {
+      "runs": 7,
+      "zero_edit": 0,
+      "hamming_below_budget": 2,
+      "mean_hamming": 2.5714285714285716,
+      "budget": 3
+    }
+  }
+}

@@ -324,10 +324,11 @@ class Attacker:
                 t0 = time.perf_counter()
                 allowed = self._allowed_positions(eligible, changed, cfg)
 
-                if cfg.strategy == "gradient":
+                if cfg.strategy in ("gradient", "gradient_stratified"):
                     candidates = self._gradient_candidates(
                         input_ids, attention_mask, objective_fn, eos_ids, cfg,
                         allowed, illegal, force_full, counters,
+                        stratified=cfg.strategy == "gradient_stratified",
                     )
                 else:
                     candidates = self._random_candidates(
@@ -435,10 +436,30 @@ class Attacker:
         illegal: set[int],
         force_full: bool,
         counters: "_ComputeCounters",
+        stratified: bool = False,
     ) -> list[tuple[int, int]]:
         """Rank every legal (position, token) substitution by first-order estimate.
 
-        Returns the top-k as `(position, token_id)` pairs.
+        Returns `top_k` `(position, token_id)` pairs, so both gradient variants
+        and the random control spend the same number of exact evaluations.
+
+        Two ways of turning the score matrix into a shortlist:
+
+        * **global** (`strategy="gradient"`): `topk` over the flattened
+          `(positions x vocab)` matrix. This is the textbook HotFlip shortlist and
+          the original implementation.
+        * **stratified** (`strategy="gradient_stratified"`): round-robin over
+          positions, taking each position's best remaining candidate in turn.
+
+        The distinction is not cosmetic. Measured on t5-small, the global
+        shortlist draws 90-100% of its candidates from a *single* position even at
+        `top_k=100`, because one position dominates the gradient magnitude. Once
+        that position has been edited the shortlist re-concentrates on it, nothing
+        improves, and the search halts with most of the perturbation budget
+        unspent -- mean Hamming 1.43 against a budget of 3, while the random
+        control reaches 2.57. A falsifier check confirmed the objective has *not*
+        saturated at that point: 39 improving substitutions were found at
+        non-edited positions across the development inputs.
         """
         embeds = self.adapter.embed(input_ids)
         stop_logits = self.adapter.stop_logits(
@@ -483,15 +504,48 @@ class Attacker:
 
         scores[torch.arange(scores.shape[0]), input_ids[0]] = float("inf")
 
-        flat = scores.flatten()
-        k = min(cfg.top_k, int(torch.isfinite(flat).sum().item()))
-        if k < 1:
-            return []
-        _, flat_idx = torch.topk(-flat, k)
         vocab_size = scores.shape[1]
-        return [
-            (int(i.item() // vocab_size), int(i.item() % vocab_size)) for i in flat_idx
-        ]
+        budget = min(cfg.top_k, int(torch.isfinite(scores).sum().item()))
+        if budget < 1:
+            return []
+
+        if not stratified:
+            flat = scores.flatten()
+            _, flat_idx = torch.topk(-flat, budget)
+            return [
+                (int(i.item() // vocab_size), int(i.item() % vocab_size))
+                for i in flat_idx
+            ]
+
+        # Round-robin: each allowed position offers its best remaining candidate
+        # before any position offers its second. Guarantees every position is
+        # represented while still preferring high-scoring tokens within a
+        # position.
+        per_position = min(budget, vocab_size)
+        ranked: dict[int, list[int]] = {}
+        for position in allowed:
+            row = scores[position]
+            finite = int(torch.isfinite(row).sum().item())
+            if finite < 1:
+                continue
+            take = min(per_position, finite)
+            _, idx = torch.topk(-row, take)
+            ranked[position] = [int(i.item()) for i in idx]
+
+        picked: list[tuple[int, int]] = []
+        depth = 0
+        while len(picked) < budget and ranked:
+            progressed = False
+            for position in sorted(ranked):
+                if depth < len(ranked[position]):
+                    picked.append((position, ranked[position][depth]))
+                    progressed = True
+                    if len(picked) == budget:
+                        break
+            if not progressed:
+                break
+            depth += 1
+        return picked
 
     def _random_candidates(
         self,

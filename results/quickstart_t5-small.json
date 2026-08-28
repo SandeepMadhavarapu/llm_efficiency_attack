@@ -15,19 +15,19 @@
     },
     "benign": {
       "output_tokens": 6,
-      "wall_time_s": 0.04689890000008745,
+      "wall_time_s": 0.05683370000042487,
       "stopped_by": "eos"
     },
     "adversarial": {
       "output_tokens": 9,
-      "wall_time_s": 0.06119870000020455,
+      "wall_time_s": 0.10644080000201939,
       "stopped_by": "eos"
     },
     "cost": {
       "benign_output_tokens": 6,
       "adversarial_output_tokens": 9,
       "output_token_ratio": 1.5,
-      "wall_time_ratio": 1.3049069381177476,
+      "wall_time_ratio": 1.872846568166839,
       "note": "output_token_ratio is the primary metric: generated token count under greedy decoding, which is deterministic and hardware-independent. It is a proxy for inference cost, not a latency measurement. wall_time_ratio is secondary and noisy -- on short generations it is dominated by scheduling jitter and can come out below 1.0 even when the attack succeeded. Read `censored.interpretation` before quoting either number."
     },
     "censored": {
@@ -44,6 +44,7 @@
         8
       ],
       "hamming_distance": 1,
+      "input_mode": "text",
       "round_trip_exact": true,
       "original_token_ids": [
         13959,
@@ -71,7 +72,7 @@
         5,
         1
       ],
-      "note": "positions_touched counts positions the search wrote to; hamming_distance counts positions whose final token actually differs from the original. They are not the same number: a position written twice counts once as touched, and a position restored to its original token still counts as touched. The budget bounds positions_touched. round_trip_exact records that the returned text re-tokenises to exactly these ids, so the bound applies to what the caller feeds the model. This is a bound on token-level edit count only: no semantic, fluency, or human-perceptibility constraint is enforced."
+      "note": "positions_touched counts positions the search wrote to; hamming_distance counts positions whose final token actually differs from the original. They are not the same number: a position written twice counts once as touched, and a position restored to its original token still counts as touched. The budget bounds positions_touched. With text input, round_trip_exact records that the returned text re-tokenises to exactly these ids, so the bound applies to what the caller feeds the model; with token input it is null, because the ids are returned directly and no realisation step occurs. This is a bound on token-level edit count only: no semantic, fluency, or human-perceptibility constraint is enforced."
     },
     "attack_cost": {
       "objective_evaluations": 64,
@@ -116,7 +117,7 @@
         "tokens_changed": 1,
         "output_tokens": 9,
         "stopped_by": "eos",
-        "elapsed_s": 1.565737199999603
+        "elapsed_s": 1.5791897000017343
       },
       {
         "iteration": 1,
@@ -126,7 +127,7 @@
         "tokens_changed": 1,
         "output_tokens": 9,
         "stopped_by": "eos",
-        "elapsed_s": 1.549867999999151
+        "elapsed_s": 1.6469626000034623
       }
     ]
   },
@@ -146,19 +147,19 @@
     },
     "benign": {
       "output_tokens": 6,
-      "wall_time_s": 0.05120809999971243,
+      "wall_time_s": 0.0633497000017087,
       "stopped_by": "eos"
     },
     "adversarial": {
       "output_tokens": 10,
-      "wall_time_s": 0.06733669999994163,
+      "wall_time_s": 0.06565360000240617,
       "stopped_by": "eos"
     },
     "cost": {
       "benign_output_tokens": 6,
       "adversarial_output_tokens": 10,
       "output_token_ratio": 1.6666666666666667,
-      "wall_time_ratio": 1.314961890800865,
+      "wall_time_ratio": 1.0363679701819477,
       "note": "output_token_ratio is the primary metric: generated token count under greedy decoding, which is deterministic and hardware-independent. It is a proxy for inference cost, not a latency measurement. wall_time_ratio is secondary and noisy -- on short generations it is dominated by scheduling jitter and can come out below 1.0 even when the attack succeeded. Read `censored.interpretation` before quoting either number."
     },
     "censored": {
@@ -175,6 +176,7 @@
         8
       ],
       "hamming_distance": 1,
+      "input_mode": "text",
       "round_trip_exact": true,
       "original_token_ids": [
         13959,
@@ -202,7 +204,7 @@
         5,
         1
       ],
-      "note": "positions_touched counts positions the search wrote to; hamming_distance counts positions whose final token actually differs from the original. They are not the same number: a position written twice counts once as touched, and a position restored to its original token still counts as touched. The budget bounds positions_touched. round_trip_exact records that the returned text re-tokenises to exactly these ids, so the bound applies to what the caller feeds the model. This is a bound on token-level edit count only: no semantic, fluency, or human-perceptibility constraint is enforced."
+      "note": "positions_touched counts positions the search wrote to; hamming_distance counts positions whose final token actually differs from the original. They are not the same number: a position written twice counts once as touched, and a position restored to its original token still counts as touched. The budget bounds positions_touched. With text input, round_trip_exact records that the returned text re-tokenises to exactly these ids, so the bound applies to what the caller feeds the model; with token input it is null, because the ids are returned directly and no realisation step occurs. This is a bound on token-level edit count only: no semantic, fluency, or human-perceptibility constraint is enforced."
     },
     "attack_cost": {
       "objective_evaluations": 41,
@@ -247,7 +249,7 @@
         "tokens_changed": 1,
         "output_tokens": 10,
         "stopped_by": "eos",
-        "elapsed_s": 1.397191699999894
+        "elapsed_s": 1.605006500001764
       }
     ]
   }

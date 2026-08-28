@@ -1,0 +1,154 @@
+{
+  "environment": {
+    "torch": "2.13.0+cpu",
+    "transformers": "5.16.1",
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "device": "cpu"
+  },
+  "config": {
+    "objective": "eos_suppression",
+    "strategy": "gradient",
+    "max_iterations": 4,
+    "perturbation_budget": 3,
+    "max_new_tokens": 128,
+    "objective_horizon": 8,
+    "top_k": 10,
+    "seed": 0,
+    "verbose": false
+  },
+  "causal_prompts": [
+    "What is the capital of France?",
+    "Name three primary colors.",
+    "How many days are in a leap year?",
+    "Write one sentence about the ocean.",
+    "What is 12 plus 30?",
+    "Give a short definition of gravity."
+  ],
+  "seq2seq_prompts": [
+    "The house is wonderful.",
+    "She walked to the market this morning.",
+    "The weather today is unusually cold.",
+    "He forgot his keys on the kitchen table.",
+    "They are building a new library downtown.",
+    "Good morning, how are you today?"
+  ],
+  "results": [
+    {
+      "model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "role": "causal instruction-tuned",
+      "causal": true,
+      "architectures": [
+        "Qwen2ForCausalLM"
+      ],
+      "parameters_millions": 494.032768,
+      "embedding_scale": 1.0,
+      "embedding_equivalence": {
+        "passed": true,
+        "max_logit_deviation": 0.0
+      },
+      "eos_token_ids": [
+        151645,
+        151643
+      ],
+      "outcome": "representation_not_exactly_realizable",
+      "attack_executed": false,
+      "efficacy_measured": false,
+      "realization": [
+        {
+          "exact": false,
+          "input_tokens": 36,
+          "realised_tokens": 29,
+          "interior_special_ids": [
+            151644,
+            151645
+          ]
+        },
+        {
+          "exact": false,
+          "input_tokens": 34,
+          "realised_tokens": 27,
+          "interior_special_ids": [
+            151644,
+            151645
+          ]
+        },
+        {
+          "exact": false,
+          "input_tokens": 38,
+          "realised_tokens": 31,
+          "interior_special_ids": [
+            151644,
+            151645
+          ]
+        },
+        {
+          "exact": false,
+          "input_tokens": 36,
+          "realised_tokens": 29,
+          "interior_special_ids": [
+            151644,
+            151645
+          ]
+        },
+        {
+          "exact": false,
+          "input_tokens": 39,
+          "realised_tokens": 32,
+          "interior_special_ids": [
+            151644,
+            151645
+          ]
+        },
+        {
+          "exact": false,
+          "input_tokens": 36,
+          "realised_tokens": 29,
+          "interior_special_ids": [
+            151644,
+            151645
+          ]
+        }
+      ],
+      "benign_only": [
+        {
+          "prompt": "What is the capital of France?",
+          "output_tokens": 8,
+          "wall_time_s": 0.3748884000015096,
+          "stopped_by": "eos"
+        },
+        {
+          "prompt": "Name three primary colors.",
+          "output_tokens": 32,
+          "wall_time_s": 1.2397085999982664,
+          "stopped_by": "eos"
+        },
+        {
+          "prompt": "How many days are in a leap year?",
+          "output_tokens": 128,
+          "wall_time_s": 4.712863400003698,
+          "stopped_by": "max_tokens"
+        },
+        {
+          "prompt": "Write one sentence about the ocean.",
+          "output_tokens": 31,
+          "wall_time_s": 1.180570099997567,
+          "stopped_by": "eos"
+        },
+        {
+          "prompt": "What is 12 plus 30?",
+          "output_tokens": 12,
+          "wall_time_s": 0.5278491999997641,
+          "stopped_by": "eos"
+        },
+        {
+          "prompt": "Give a short definition of gravity.",
+          "output_tokens": 93,
+          "wall_time_s": 3.3664047999991453,
+          "stopped_by": "eos"
+        }
+      ],
+      "benign_terminated_on_eos": 5
+    }
+  ]
+}

@@ -1,0 +1,380 @@
+{
+  "environment": {
+    "torch": "2.13.0+cpu",
+    "transformers": "5.16.1",
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "device": "cpu"
+  },
+  "config": {
+    "objective": "eos_suppression",
+    "strategy": "gradient",
+    "max_iterations": 4,
+    "perturbation_budget": 3,
+    "max_new_tokens": 128,
+    "objective_horizon": 8,
+    "top_k": 10,
+    "seed": 0,
+    "verbose": false
+  },
+  "causal_prompts": [
+    "What is the capital of France?",
+    "Name three primary colors.",
+    "How many days are in a leap year?",
+    "Write one sentence about the ocean.",
+    "What is 12 plus 30?",
+    "Give a short definition of gravity."
+  ],
+  "seq2seq_prompts": [
+    "The house is wonderful.",
+    "She walked to the market this morning.",
+    "The weather today is unusually cold.",
+    "He forgot his keys on the kitchen table.",
+    "They are building a new library downtown.",
+    "Good morning, how are you today?"
+  ],
+  "results": [
+    {
+      "model": "Helsinki-NLP/opus-mt-en-de",
+      "role": "second seq2seq architecture",
+      "causal": false,
+      "architectures": [
+        "MarianMTModel"
+      ],
+      "parameters_millions": 74.410496,
+      "embedding_scale": 22.627416997969522,
+      "embedding_equivalence": {
+        "passed": true,
+        "max_logit_deviation": 0.0
+      },
+      "eos_token_ids": [
+        0
+      ],
+      "outcome": "attack_executed",
+      "attack_executed": true,
+      "efficacy_measured": true,
+      "realization": [
+        {
+          "exact": true,
+          "input_tokens": 6,
+          "realised_tokens": 6,
+          "interior_special_ids": []
+        },
+        {
+          "exact": true,
+          "input_tokens": 9,
+          "realised_tokens": 9,
+          "interior_special_ids": []
+        },
+        {
+          "exact": true,
+          "input_tokens": 9,
+          "realised_tokens": 9,
+          "interior_special_ids": []
+        },
+        {
+          "exact": true,
+          "input_tokens": 10,
+          "realised_tokens": 10,
+          "interior_special_ids": []
+        },
+        {
+          "exact": true,
+          "input_tokens": 9,
+          "realised_tokens": 9,
+          "interior_special_ids": []
+        },
+        {
+          "exact": true,
+          "input_tokens": 9,
+          "realised_tokens": 9,
+          "interior_special_ids": []
+        }
+      ],
+      "config": {
+        "objective": "eos_suppression",
+        "strategy": "gradient",
+        "max_iterations": 4,
+        "perturbation_budget": 3,
+        "max_new_tokens": 128,
+        "objective_horizon": 8,
+        "top_k": 10,
+        "seed": 0,
+        "verbose": false
+      },
+      "strategy": "gradient",
+      "summary": {
+        "prompts": 6,
+        "improved": 1,
+        "unchanged": 5,
+        "worsened": 0,
+        "zero_edit_runs": 4,
+        "mean_delta": 0.5,
+        "median_delta": 0.0,
+        "uninformative_censoring": 0,
+        "benign_at_ceiling": 0,
+        "round_trip_exact_all": true,
+        "budget_respected_all": true
+      },
+      "rows": [
+        {
+          "prompt": "The house is wonderful.",
+          "input_text": "The house is wonderful.",
+          "adv_x": "The house is suspension.",
+          "protected_prefix_tokens": 0,
+          "template_suffix_tokens": 0,
+          "benign_output_tokens": 6,
+          "adversarial_output_tokens": 9,
+          "delta": 3,
+          "ratio": 1.5,
+          "benign_stopped_by": "eos",
+          "adversarial_stopped_by": "eos",
+          "censoring": "point_estimate",
+          "perturbation_budget": 3,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "positions_changed": [
+            3
+          ],
+          "round_trip_exact": true,
+          "template_suffix_touched": [],
+          "objective_evaluations": 14,
+          "search_model_forwards": 118,
+          "total_model_forwards": 147
+        },
+        {
+          "prompt": "She walked to the market this morning.",
+          "input_text": "She walked to the market this morning.",
+          "adv_x": "She walked to the market this morning.",
+          "protected_prefix_tokens": 0,
+          "template_suffix_tokens": 0,
+          "benign_output_tokens": 10,
+          "adversarial_output_tokens": 10,
+          "delta": 0,
+          "ratio": 1.0,
+          "benign_stopped_by": "eos",
+          "adversarial_stopped_by": "eos",
+          "censoring": "point_estimate",
+          "perturbation_budget": 3,
+          "hamming_distance": 0,
+          "positions_touched": 0,
+          "positions_changed": [],
+          "round_trip_exact": true,
+          "template_suffix_touched": [],
+          "objective_evaluations": 3,
+          "search_model_forwards": 27,
+          "total_model_forwards": 49
+        },
+        {
+          "prompt": "The weather today is unusually cold.",
+          "input_text": "The weather today is unusually cold.",
+          "adv_x": "The weather today is unusually cold.",
+          "protected_prefix_tokens": 0,
+          "template_suffix_tokens": 0,
+          "benign_output_tokens": 8,
+          "adversarial_output_tokens": 8,
+          "delta": 0,
+          "ratio": 1.0,
+          "benign_stopped_by": "eos",
+          "adversarial_stopped_by": "eos",
+          "censoring": "point_estimate",
+          "perturbation_budget": 3,
+          "hamming_distance": 0,
+          "positions_touched": 0,
+          "positions_changed": [],
+          "round_trip_exact": true,
+          "template_suffix_touched": [],
+          "objective_evaluations": 5,
+          "search_model_forwards": 45,
+          "total_model_forwards": 63
+        },
+        {
+          "prompt": "He forgot his keys on the kitchen table.",
+          "input_text": "He forgot his keys on the kitchen table.",
+          "adv_x": "He forgot his keys on the kitchen table.",
+          "protected_prefix_tokens": 0,
+          "template_suffix_tokens": 0,
+          "benign_output_tokens": 11,
+          "adversarial_output_tokens": 11,
+          "delta": 0,
+          "ratio": 1.0,
+          "benign_stopped_by": "eos",
+          "adversarial_stopped_by": "eos",
+          "censoring": "point_estimate",
+          "perturbation_budget": 3,
+          "hamming_distance": 0,
+          "positions_touched": 0,
+          "positions_changed": [],
+          "round_trip_exact": true,
+          "template_suffix_touched": [],
+          "objective_evaluations": 11,
+          "search_model_forwards": 99,
+          "total_model_forwards": 123
+        },
+        {
+          "prompt": "They are building a new library downtown.",
+          "input_text": "They are building a new library downtown.",
+          "adv_x": "They are building a new library downtown.",
+          "protected_prefix_tokens": 0,
+          "template_suffix_tokens": 0,
+          "benign_output_tokens": 10,
+          "adversarial_output_tokens": 10,
+          "delta": 0,
+          "ratio": 1.0,
+          "benign_stopped_by": "eos",
+          "adversarial_stopped_by": "eos",
+          "censoring": "point_estimate",
+          "perturbation_budget": 3,
+          "hamming_distance": 0,
+          "positions_touched": 0,
+          "positions_changed": [],
+          "round_trip_exact": true,
+          "template_suffix_touched": [],
+          "objective_evaluations": 3,
+          "search_model_forwards": 27,
+          "total_model_forwards": 49
+        },
+        {
+          "prompt": "Good morning, how are you today?",
+          "input_text": "Good morning, how are you today?",
+          "adv_x": "Goodchem, how are you today?",
+          "protected_prefix_tokens": 0,
+          "template_suffix_tokens": 0,
+          "benign_output_tokens": 11,
+          "adversarial_output_tokens": 11,
+          "delta": 0,
+          "ratio": 1.0,
+          "benign_stopped_by": "eos",
+          "adversarial_stopped_by": "eos",
+          "censoring": "point_estimate",
+          "perturbation_budget": 3,
+          "hamming_distance": 1,
+          "positions_touched": 1,
+          "positions_changed": [
+            1
+          ],
+          "round_trip_exact": true,
+          "template_suffix_touched": [],
+          "objective_evaluations": 31,
+          "search_model_forwards": 279,
+          "total_model_forwards": 325
+        }
+      ]
+    },
+    {
+      "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+      "role": "causal instruction-tuned",
+      "causal": true,
+      "architectures": [
+        "LlamaForCausalLM"
+      ],
+      "parameters_millions": 134.515008,
+      "embedding_scale": 1.0,
+      "embedding_equivalence": {
+        "passed": true,
+        "max_logit_deviation": 0.0
+      },
+      "eos_token_ids": [
+        2
+      ],
+      "outcome": "representation_not_exactly_realizable",
+      "attack_executed": false,
+      "efficacy_measured": false,
+      "realization": [
+        {
+          "exact": false,
+          "input_tokens": 37,
+          "realised_tokens": 32,
+          "interior_special_ids": [
+            1,
+            2
+          ]
+        },
+        {
+          "exact": false,
+          "input_tokens": 35,
+          "realised_tokens": 30,
+          "interior_special_ids": [
+            1,
+            2
+          ]
+        },
+        {
+          "exact": false,
+          "input_tokens": 39,
+          "realised_tokens": 34,
+          "interior_special_ids": [
+            1,
+            2
+          ]
+        },
+        {
+          "exact": false,
+          "input_tokens": 37,
+          "realised_tokens": 32,
+          "interior_special_ids": [
+            1,
+            2
+          ]
+        },
+        {
+          "exact": false,
+          "input_tokens": 40,
+          "realised_tokens": 35,
+          "interior_special_ids": [
+            1,
+            2
+          ]
+        },
+        {
+          "exact": false,
+          "input_tokens": 37,
+          "realised_tokens": 32,
+          "interior_special_ids": [
+            1,
+            2
+          ]
+        }
+      ],
+      "benign_only": [
+        {
+          "prompt": "What is the capital of France?",
+          "output_tokens": 8,
+          "wall_time_s": 0.23875350000162143,
+          "stopped_by": "eos"
+        },
+        {
+          "prompt": "Name three primary colors.",
+          "output_tokens": 99,
+          "wall_time_s": 2.4776167000018177,
+          "stopped_by": "eos"
+        },
+        {
+          "prompt": "How many days are in a leap year?",
+          "output_tokens": 48,
+          "wall_time_s": 1.1952365000033751,
+          "stopped_by": "eos"
+        },
+        {
+          "prompt": "Write one sentence about the ocean.",
+          "output_tokens": 89,
+          "wall_time_s": 2.2172652000008384,
+          "stopped_by": "eos"
+        },
+        {
+          "prompt": "What is 12 plus 30?",
+          "output_tokens": 12,
+          "wall_time_s": 0.32361130000208504,
+          "stopped_by": "eos"
+        },
+        {
+          "prompt": "Give a short definition of gravity.",
+          "output_tokens": 38,
+          "wall_time_s": 0.9159359999976004,
+          "stopped_by": "eos"
+        }
+      ],
+      "benign_terminated_on_eos": 6
+    }
+  ]
+}

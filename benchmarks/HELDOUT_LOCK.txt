@@ -1,0 +1,23 @@
+Held-out benchmark freeze record
+================================
+
+file          : benchmarks/heldout_seq2seq_v1.json
+sha256        : 9cc6170a3441fa67c2c8602213d66fb1e4fdccaf14efddcb8d835f5031fd390c
+bytes         : 3054
+n_inputs      : 24
+frozen_on     : 2026-08-28
+frozen_before : any algorithm modification, and before any model was run
+                on these inputs. No benign or adversarial output from this
+                set had been observed at the time of freezing.
+seed policy   : a single seed, 0. No multi-seed protocol is declared.
+usage         : exactly one evaluation of the locked strategy set.
+                Not to be modified, extended, filtered, or re-run with a
+                different configuration.
+
+provenance    : this lock was created locally before the evaluation was run.
+                It was NOT published in a commit predating the results, so it
+                is not independently timestamped: a reviewer can verify the
+                hashes match, but must take the ordering on trust.
+
+Verify with:
+  python -c "import hashlib;print(hashlib.sha256(open('benchmarks/heldout_seq2seq_v1.json','rb').read()).hexdigest())"

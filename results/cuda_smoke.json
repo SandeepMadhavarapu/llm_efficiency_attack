@@ -1,0 +1,159 @@
+{
+  "environment": {
+    "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+    "gpu_count": 1,
+    "torch": "2.11.0+cu128",
+    "torch_cuda": "12.8",
+    "cudnn": 91900,
+    "transformers": "5.16.1",
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "model": "t5-small"
+  },
+  "config": {
+    "objective": "eos_suppression",
+    "strategy": "gradient",
+    "max_iterations": 10,
+    "perturbation_budget": 3,
+    "top_k": 20,
+    "max_new_tokens": 128,
+    "protected_prefix_tokens": 7,
+    "objective_horizon": 8,
+    "seed": 0,
+    "device": "cuda"
+  },
+  "input": "translate English to German: The house is wonderful.",
+  "adv_x": "translate English to German: The house is Madagascar.",
+  "checks": [
+    {
+      "name": "model loads on CPU before the attack moves it",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "model resides on cuda after run()",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "every tensor reaching generate() was on cuda",
+      "passed": true,
+      "detail": "observed devices: ['cuda']"
+    },
+    {
+      "name": "benign cost measured",
+      "passed": true,
+      "detail": "6 tokens"
+    },
+    {
+      "name": "adversarial cost measured",
+      "passed": true,
+      "detail": "9 tokens"
+    },
+    {
+      "name": "gradients were computed on device",
+      "passed": true,
+      "detail": "3 backward passes"
+    },
+    {
+      "name": "candidate scoring ran",
+      "passed": true,
+      "detail": "64 objective evaluations"
+    },
+    {
+      "name": "forward accounting is internally consistent",
+      "passed": true,
+      "detail": "554 total"
+    },
+    {
+      "name": "inputs_embeds path matches input_ids path on device",
+      "passed": true,
+      "detail": "max logit deviation 0"
+    },
+    {
+      "name": "returned text re-tokenises to the optimised ids",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "returned text really does round-trip (checked independently)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "perturbation budget respected",
+      "passed": true,
+      "detail": "hamming 1, touched 1, budget 3"
+    },
+    {
+      "name": "censoring interpretation is well formed",
+      "passed": true,
+      "detail": "point_estimate"
+    },
+    {
+      "name": "logs are JSON-serialisable",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "all_passed": true,
+  "cost": {
+    "benign_output_tokens": 6,
+    "adversarial_output_tokens": 9,
+    "output_token_ratio": 1.5,
+    "wall_time_ratio": 0.8538850307574891,
+    "note": "output_token_ratio is the primary metric: generated token count under greedy decoding, which is deterministic and hardware-independent. It is a proxy for inference cost, not a latency measurement. wall_time_ratio is secondary and noisy -- on short generations it is dominated by scheduling jitter and can come out below 1.0 even when the attack succeeded. Read `censored.interpretation` before quoting either number."
+  },
+  "censored": {
+    "max_new_tokens": 128,
+    "benign_hit_ceiling": false,
+    "adversarial_hit_ceiling": false,
+    "interpretation": "point_estimate",
+    "note": "Neither generation reached the max_new_tokens ceiling, so both costs are exact measurements and the reported ratio is a point estimate."
+  },
+  "perturbation": {
+    "budget": 3,
+    "positions_touched": 1,
+    "positions_changed": [
+      8
+    ],
+    "hamming_distance": 1,
+    "input_mode": "text",
+    "round_trip_exact": true,
+    "original_token_ids": [
+      13959,
+      1566,
+      12,
+      2968,
+      10,
+      37,
+      629,
+      19,
+      1627,
+      5,
+      1
+    ],
+    "adversarial_token_ids": [
+      13959,
+      1566,
+      12,
+      2968,
+      10,
+      37,
+      629,
+      19,
+      30616,
+      5,
+      1
+    ]
+  },
+  "attack_cost": {
+    "objective_evaluations": 64,
+    "gradient_evaluations": 3,
+    "candidates_rejected_non_round_trip": 0,
+    "search_model_forwards": 519,
+    "measurement_model_forwards": 33,
+    "diagnostic_model_forwards": 2,
+    "total_model_forwards": 554
+  }
+}

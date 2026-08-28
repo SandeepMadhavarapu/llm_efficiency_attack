@@ -1,0 +1,250 @@
+{
+  "environment": {
+    "model": "t5-small",
+    "torch": "2.13.0+cpu",
+    "transformers": "5.16.1",
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "config": {
+    "max_iterations": 6,
+    "perturbation_budget": 3,
+    "top_k": 30,
+    "max_new_tokens": 128,
+    "protected_prefix_tokens": 7,
+    "objective_horizon": 8
+  },
+  "seeds": 3,
+  "inputs": [
+    "translate English to German: The house is wonderful.",
+    "translate English to German: She walked to the market this morning.",
+    "translate English to German: He forgot his keys on the kitchen table.",
+    "summarize: The committee met on Tuesday to review the annual budget report."
+  ],
+  "embedding_rows": 32128,
+  "tokenizer_entries": 32100,
+  "excluded_token_ids": 131,
+  "special_token_ids": 103,
+  "runs": 24,
+  "invariant_violations": 0,
+  "violations": [],
+  "candidates_rejected_non_round_trip": 22,
+  "per_run": [
+    {
+      "strategy": "gradient",
+      "seed": 0,
+      "input": "translate English to German: The house is wonderful.",
+      "adv_x": "translate English to German: The house is thyroid.",
+      "hamming_distance": 1,
+      "positions_touched": 1,
+      "checks_passed": true
+    },
+    {
+      "strategy": "gradient",
+      "seed": 0,
+      "input": "translate English to German: She walked to the market this morning.",
+      "adv_x": "translate English to German: She walked to the market this recession.",
+      "hamming_distance": 1,
+      "positions_touched": 1,
+      "checks_passed": true
+    },
+    {
+      "strategy": "gradient",
+      "seed": 0,
+      "input": "translate English to German: He forgot his keys on the kitchen table.",
+      "adv_x": "translate English to German: He forgot his Kashmir on the kitchen table.",
+      "hamming_distance": 1,
+      "positions_touched": 1,
+      "checks_passed": true
+    },
+    {
+      "strategy": "gradient",
+      "seed": 0,
+      "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+      "adv_x": "summarize: The committee met on Tuesday tocosting thecosting budget report placeholder",
+      "hamming_distance": 3,
+      "positions_touched": 3,
+      "checks_passed": true
+    },
+    {
+      "strategy": "gradient",
+      "seed": 1,
+      "input": "translate English to German: The house is wonderful.",
+      "adv_x": "translate English to German: The house is thyroid.",
+      "hamming_distance": 1,
+      "positions_touched": 1,
+      "checks_passed": true
+    },
+    {
+      "strategy": "gradient",
+      "seed": 1,
+      "input": "translate English to German: She walked to the market this morning.",
+      "adv_x": "translate English to German: She walked to the market this recession.",
+      "hamming_distance": 1,
+      "positions_touched": 1,
+      "checks_passed": true
+    },
+    {
+      "strategy": "gradient",
+      "seed": 1,
+      "input": "translate English to German: He forgot his keys on the kitchen table.",
+      "adv_x": "translate English to German: He forgot his Kashmir on the kitchen table.",
+      "hamming_distance": 1,
+      "positions_touched": 1,
+      "checks_passed": true
+    },
+    {
+      "strategy": "gradient",
+      "seed": 1,
+      "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+      "adv_x": "summarize: The committee met on Tuesday tocosting thecosting budget report placeholder",
+      "hamming_distance": 3,
+      "positions_touched": 3,
+      "checks_passed": true
+    },
+    {
+      "strategy": "gradient",
+      "seed": 2,
+      "input": "translate English to German: The house is wonderful.",
+      "adv_x": "translate English to German: The house is thyroid.",
+      "hamming_distance": 1,
+      "positions_touched": 1,
+      "checks_passed": true
+    },
+    {
+      "strategy": "gradient",
+      "seed": 2,
+      "input": "translate English to German: She walked to the market this morning.",
+      "adv_x": "translate English to German: She walked to the market this recession.",
+      "hamming_distance": 1,
+      "positions_touched": 1,
+      "checks_passed": true
+    },
+    {
+      "strategy": "gradient",
+      "seed": 2,
+      "input": "translate English to German: He forgot his keys on the kitchen table.",
+      "adv_x": "translate English to German: He forgot his Kashmir on the kitchen table.",
+      "hamming_distance": 1,
+      "positions_touched": 1,
+      "checks_passed": true
+    },
+    {
+      "strategy": "gradient",
+      "seed": 2,
+      "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+      "adv_x": "summarize: The committee met on Tuesday tocosting thecosting budget report placeholder",
+      "hamming_distance": 3,
+      "positions_touched": 3,
+      "checks_passed": true
+    },
+    {
+      "strategy": "random",
+      "seed": 0,
+      "input": "translate English to German: The house is wonderful.",
+      "adv_x": "translate English to German: The house is predictable.",
+      "hamming_distance": 1,
+      "positions_touched": 1,
+      "checks_passed": true
+    },
+    {
+      "strategy": "random",
+      "seed": 0,
+      "input": "translate English to German: She walked to the market this morning.",
+      "adv_x": "translate English to German: She walked to the interrupted perioad\u0103 morning.",
+      "hamming_distance": 2,
+      "positions_touched": 2,
+      "checks_passed": true
+    },
+    {
+      "strategy": "random",
+      "seed": 0,
+      "input": "translate English to German: He forgot his keys on the kitchen table.",
+      "adv_x": "translate English to German: He forgot Nicaragua keys on the Statistics table Target",
+      "hamming_distance": 3,
+      "positions_touched": 3,
+      "checks_passed": true
+    },
+    {
+      "strategy": "random",
+      "seed": 0,
+      "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+      "adv_x": "summarize: The committee met on Tuesday todict the annual Bear report allocated",
+      "hamming_distance": 3,
+      "positions_touched": 3,
+      "checks_passed": true
+    },
+    {
+      "strategy": "random",
+      "seed": 1,
+      "input": "translate English to German: The house is wonderful.",
+      "adv_x": "translate English to German: The house Artificial Pluto.",
+      "hamming_distance": 2,
+      "positions_touched": 2,
+      "checks_passed": true
+    },
+    {
+      "strategy": "random",
+      "seed": 1,
+      "input": "translate English to German: She walked to the market this morning.",
+      "adv_x": "translate English to German: She walked shiny blockchain market Lisbon morning.",
+      "hamming_distance": 3,
+      "positions_touched": 3,
+      "checks_passed": true
+    },
+    {
+      "strategy": "random",
+      "seed": 1,
+      "input": "translate English to German: He forgot his keys on the kitchen table.",
+      "adv_x": "translate English to German: He forgot his authorizedadjusting the Lisbon table.",
+      "hamming_distance": 3,
+      "positions_touched": 3,
+      "checks_passed": true
+    },
+    {
+      "strategy": "random",
+      "seed": 1,
+      "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+      "adv_x": "summarize: The committee met on Tuesday to review the annualassembling report cunoaste",
+      "hamming_distance": 2,
+      "positions_touched": 2,
+      "checks_passed": true
+    },
+    {
+      "strategy": "random",
+      "seed": 2,
+      "input": "translate English to German: The house is wonderful.",
+      "adv_x": "translate English to German: The house attractionsrison malicious",
+      "hamming_distance": 3,
+      "positions_touched": 3,
+      "checks_passed": true
+    },
+    {
+      "strategy": "random",
+      "seed": 2,
+      "input": "translate English to German: She walked to the market this morning.",
+      "adv_x": "translate English to German: She walked to the d\u00e9c\u00e8 this morning.",
+      "hamming_distance": 1,
+      "positions_touched": 1,
+      "checks_passed": true
+    },
+    {
+      "strategy": "random",
+      "seed": 2,
+      "input": "translate English to German: He forgot his keys on the kitchen table.",
+      "adv_x": "translate English to German: He forgot his Signature on StatusABA table.",
+      "hamming_distance": 3,
+      "positions_touched": 3,
+      "checks_passed": true
+    },
+    {
+      "strategy": "random",
+      "seed": 2,
+      "input": "summarize: The committee met on Tuesday to review the annual budget report.",
+      "adv_x": "summarize: The committee met on Tuesday to review the lightning budget report Saturday",
+      "hamming_distance": 2,
+      "positions_touched": 2,
+      "checks_passed": true
+    }
+  ]
+}

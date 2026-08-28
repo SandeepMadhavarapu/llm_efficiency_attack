@@ -17,8 +17,8 @@ from __future__ import annotations
 import json
 
 import pytest
-from transformers import BatchEncoding
 import torch
+from transformers import BatchEncoding
 
 from conftest import (
     ALPHABET,
@@ -576,6 +576,54 @@ def test_rejection_yields_no_measurement(seq2seq_model):
         pass
     else:  # pragma: no cover - the call above must raise
         pytest.fail("an unrealizable input must not return a result")
+
+
+# --------------------------------------------- stratified candidate proposal
+
+
+def test_stratified_shortlist_spans_positions(seq2seq_model, tokenizer):
+    """`gradient_stratified` must actually diversify across positions.
+
+    The global top-k shortlist was measured on t5-small to draw 90-100% of its
+    candidates from a single token position even at `top_k=100`, because one
+    position dominates the gradient magnitude. That is what stalls the search
+    once that position has been edited. This asserts the stratified variant
+    covers every allowed position instead, at the same evaluation budget.
+    """
+    attacker, cfg, encoded, illegal, allowed = _candidate_setup(
+        seq2seq_model, tokenizer, top_k=12
+    )
+    args = (
+        encoded["input_ids"], encoded["attention_mask"],
+        get_objective("eos_suppression"), attacker.adapter.eos_token_ids(),
+        cfg, allowed, illegal, False, _ComputeCounters(),
+    )
+
+    stratified = attacker._gradient_candidates(*args, stratified=True)
+    assert len(stratified) == cfg.top_k, "the evaluation budget must be unchanged"
+    assert {p for p, _ in stratified} == set(allowed), (
+        "every allowed position must be represented"
+    )
+    assert all(token not in illegal for _, token in stratified)
+    assert all(
+        token != int(encoded["input_ids"][0, position].item())
+        for position, token in stratified
+    )
+
+
+def test_stratified_is_a_separate_strategy_not_the_default(seq2seq_model, tokenizer):
+    """The default must stay `gradient`, so published results remain reproducible."""
+    from llm_efficiency_attack.config import STRATEGIES
+
+    assert AttackConfig.from_dict(None).strategy == "gradient"
+    assert "gradient_stratified" in STRATEGIES
+
+    _, logs = Attacker(seq2seq_model, tokenizer).run(
+        "hello world", dict(FAST, strategy="gradient_stratified")
+    )
+    assert logs["config"]["strategy"] == "gradient_stratified"
+    assert logs["attack_cost"]["gradient_evaluations"] > 0
+    assert logs["perturbation"]["round_trip_exact"] is True
 
 
 # ---------------------------------------------------- token-id input (task spec)
