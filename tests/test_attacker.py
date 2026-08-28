@@ -407,16 +407,87 @@ def test_embedding_equivalence_is_checked_and_logged(seq2seq_model, tokenizer):
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="needs CUDA")
 def test_runs_on_cuda(seq2seq_model, tokenizer):
-    """Regression for the cost metric building CPU tensors for a CUDA model.
+    """Every stage of `run()` on an actual CUDA device.
 
-    Skipped on CPU-only machines, which is why `test_metrics.py` also asserts the
+    Regression for the cost metric building CPU tensors for a CUDA model:
+    `generate()` performs no device migration, so a mismatch raises rather than
+    degrading, and the whole run would die at the benign measurement.
+
+    Asserting only that a string came back would pass even if the run had
+    silently stayed on CPU, so this checks residency explicitly and then
+    re-checks the invariants that the CPU suite covers -- round trip, budget,
+    accounting, embedding equivalence -- because a device bug can corrupt those
+    without raising. Skipped on CPU-only machines; `test_metrics.py` pins the
     device invariant in a form that runs everywhere.
     """
-    adv_x, logs = Attacker(seq2seq_model, tokenizer).run(
-        "hello world", dict(FAST, device="cuda")
-    )
+    generate_devices = {}
+    original = seq2seq_model.generate
+
+    def spy(*args, **kwargs):
+        if "input_ids" in kwargs:
+            generate_devices["input_ids"] = kwargs["input_ids"].device.type
+        if "inputs_embeds" in kwargs:
+            generate_devices["inputs_embeds"] = kwargs["inputs_embeds"].device.type
+        return original(*args, **kwargs)
+
+    seq2seq_model.generate = spy
+    try:
+        adv_x, logs = Attacker(seq2seq_model, tokenizer).run(
+            "hello world", dict(FAST, device="cuda")
+        )
+    finally:
+        seq2seq_model.generate = original
+
+    # The model really moved, and every tensor reaching generate() came with it.
+    assert next(seq2seq_model.parameters()).device.type == "cuda"
+    assert generate_devices, "generate() was never called"
+    assert set(generate_devices.values()) == {"cuda"}, generate_devices
+
+    # Measurement ran on both sides.
     assert isinstance(adv_x, str)
     assert logs["cost"]["benign_output_tokens"] > 0
+    assert logs["cost"]["adversarial_output_tokens"] > 0
+    assert logs["censored"]["interpretation"] in {
+        "point_estimate", "lower_bound", "upper_bound", "uninformative"
+    }
+
+    # Gradients were taken on device, and the search actually ran.
+    cost = logs["attack_cost"]
+    assert cost["gradient_evaluations"] > 0
+    assert cost["objective_evaluations"] > 0
+    assert cost["search_model_forwards"] > cost["objective_evaluations"]
+    assert cost["total_model_forwards"] == (
+        cost["search_model_forwards"]
+        + cost["measurement_model_forwards"]
+        + cost["diagnostic_model_forwards"]
+    )
+
+    # Invariants must hold identically on device.
+    perturbation = logs["perturbation"]
+    assert perturbation["round_trip_exact"] is True
+    assert perturbation["hamming_distance"] <= perturbation["positions_touched"]
+    assert perturbation["positions_touched"] <= perturbation["budget"]
+    assert logs["diagnostics"]["embedding_equivalence_max_logit_deviation"] == \
+        pytest.approx(0.0, abs=1e-3)
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="needs CUDA")
+def test_causal_model_runs_on_cuda(causal_model, tokenizer):
+    """The causal adapter concatenates continuation embeddings; do that on device.
+
+    A separate test because the causal `stop_logits` path builds tensors the
+    seq2seq path does not -- `torch.cat` of prompt and continuation embeddings,
+    and an extended attention mask -- each of which is its own chance to place a
+    tensor on the wrong device.
+    """
+    adv_x, logs = Attacker(causal_model, tokenizer).run(
+        "hello world", dict(FAST, device="cuda")
+    )
+    assert next(causal_model.parameters()).device.type == "cuda"
+    assert isinstance(adv_x, str)
+    assert logs["cost"]["benign_output_tokens"] > 0
+    assert logs["perturbation"]["round_trip_exact"] is True
+    assert logs["attack_cost"]["gradient_evaluations"] > 0
 
 
 # ------------------------------------------- exact text realization boundary

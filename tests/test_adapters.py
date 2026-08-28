@@ -203,3 +203,72 @@ def test_forbidden_ids_tolerate_a_tokenizer_without_len(seq2seq_model):
         all_special_ids = [0, 1]
 
     assert forbidden_token_ids(Minimal(), 64) == {0, 1}
+
+
+# --------------------------------------- equivalence across architecture families
+
+
+def _tiny(builder):
+    torch.manual_seed(0)
+    return builder().eval()
+
+
+def _architectures():
+    """Small configs across the families this toolbox claims to handle.
+
+    Built locally so the check stays offline. These are architecture *shapes*,
+    not trained checkpoints: passing here means the `inputs_embeds` path is
+    wired correctly for that family, not that an attack was ever run on it.
+    RESULTS.md keeps those evidence levels separate.
+    """
+    from transformers import (
+        BartConfig, BartForConditionalGeneration,
+        LlamaConfig, LlamaForCausalLM,
+        OPTConfig, OPTForCausalLM,
+        Qwen2Config, Qwen2ForCausalLM,
+    )
+
+    def bart(scale):
+        return BartForConditionalGeneration(BartConfig(
+            vocab_size=64, d_model=32, encoder_layers=1, decoder_layers=1,
+            encoder_attention_heads=2, decoder_attention_heads=2,
+            encoder_ffn_dim=32, decoder_ffn_dim=32, max_position_embeddings=64,
+            pad_token_id=0, decoder_start_token_id=0, eos_token_id=1,
+            bos_token_id=0, scale_embedding=scale))
+
+    return [
+        ("BART scale_embedding=False", lambda: bart(False)),
+        ("BART scale_embedding=True", lambda: bart(True)),
+        ("Marian scale_embedding=True", lambda: _marian(True)),
+        ("OPT", lambda: OPTForCausalLM(OPTConfig(
+            vocab_size=64, hidden_size=32, num_hidden_layers=1,
+            num_attention_heads=2, ffn_dim=32, max_position_embeddings=64,
+            word_embed_proj_dim=32, eos_token_id=1, pad_token_id=0,
+            bos_token_id=0))),
+        ("Llama", lambda: LlamaForCausalLM(LlamaConfig(
+            vocab_size=64, hidden_size=32, intermediate_size=64,
+            num_hidden_layers=1, num_attention_heads=2, num_key_value_heads=2,
+            max_position_embeddings=64, eos_token_id=1, pad_token_id=0,
+            bos_token_id=0))),
+        ("Qwen2", lambda: Qwen2ForCausalLM(Qwen2Config(
+            vocab_size=64, hidden_size=32, intermediate_size=64,
+            num_hidden_layers=1, num_attention_heads=2, num_key_value_heads=2,
+            max_position_embeddings=64, eos_token_id=1, pad_token_id=0,
+            bos_token_id=0))),
+    ]
+
+
+@pytest.mark.parametrize("name,builder", _architectures(), ids=lambda v: v if isinstance(v, str) else "")
+def test_inputs_embeds_matches_input_ids_across_families(name, builder, tokenizer):
+    """The differentiable path must reproduce the model's normal forward pass.
+
+    This is the invariant that stops the attack optimising a function the model
+    does not compute. RESULTS.md reports zero deviation for these families; this
+    is the reproducer for that claim.
+    """
+    model = _tiny(builder)
+    adapter = ModelAdapter.for_model(model, tokenizer)
+    ids = torch.tensor([[5, 6, 7, 8, 1]])
+
+    deviation = adapter.check_embedding_equivalence(ids, torch.ones_like(ids))
+    assert deviation == pytest.approx(0.0, abs=1e-4), f"{name}: deviation {deviation}"
