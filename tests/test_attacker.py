@@ -17,9 +17,17 @@ from __future__ import annotations
 import json
 
 import pytest
+from transformers import BatchEncoding
 import torch
 
-from conftest import SPECIAL_IDS, TOKENIZER_VOCAB
+from conftest import (
+    ALPHABET,
+    EOS,
+    FIRST_TOKEN_ID,
+    SPECIAL_IDS,
+    TOKENIZER_VOCAB,
+    ToyTokenizer,
+)
 from llm_efficiency_attack import Attacker
 from llm_efficiency_attack.adapters import forbidden_token_ids
 from llm_efficiency_attack.attacker import _ComputeCounters
@@ -409,3 +417,223 @@ def test_runs_on_cuda(seq2seq_model, tokenizer):
     )
     assert isinstance(adv_x, str)
     assert logs["cost"]["benign_output_tokens"] > 0
+
+
+# ------------------------------------------- exact text realization boundary
+
+
+class _InteriorSpecialTokenizer(ToyTokenizer):
+    """A tokenizer whose inputs carry a special token in the *interior*.
+
+    This reproduces, deterministically and offline, the mechanism that real chat
+    templates hit: `<|im_start|>` and `<|im_end|>` sit inside the input, and
+    `decode(..., skip_special_tokens=True)` removes them, so re-tokenising the
+    decoded text yields a shorter, different sequence. Measured on the real
+    thing, SmolLM2-135M-Instruct goes from 37 tokens to 32.
+
+    Everything else is inherited, so the only difference from the fixture used by
+    the rest of this file is where the special token sits.
+    """
+
+    MARKER = "#"
+
+    def __call__(self, text, return_tensors=None):
+        # `#` stands in for a template token such as `<|im_start|>`: it is part
+        # of the input text and it encodes to a *special* id. Text realization
+        # drops special ids, so the character disappears from the decoded string
+        # and re-encoding cannot put it back -- which is exactly why the real
+        # 37-token SmolLM2 template comes back as 32 tokens.
+        ids = [
+            EOS if c == self.MARKER else FIRST_TOKEN_ID + ALPHABET.index(c)
+            for c in text
+            if c == self.MARKER or c in ALPHABET
+        ]
+        ids = (ids or [FIRST_TOKEN_ID]) + [EOS]
+        data = {
+            "input_ids": torch.tensor([ids], dtype=torch.long),
+            "attention_mask": torch.ones(1, len(ids), dtype=torch.long),
+        }
+        return BatchEncoding(data, tensor_type=return_tensors)
+
+
+def test_input_with_interior_special_tokens_is_rejected(seq2seq_model):
+    """Inputs that cannot be realized exactly as text are refused, not measured.
+
+    The library guarantees that the returned `adv_x` re-tokenises to exactly the
+    ids it optimised. An input carrying interior special tokens breaks that
+    before any substitution is made, because text realization drops them. The
+    correct behaviour is to refuse: measuring would report an efficiency number
+    for a token sequence other than the one that was optimised, and a
+    perturbation budget that does not apply to the text handed back.
+
+    This is a true scope boundary, and it is what currently puts chat-templated
+    inputs -- and therefore normally-deployed instruction-tuned causal models --
+    outside the exact-realization scope of the public interface.
+    """
+    tokenizer = _InteriorSpecialTokenizer()
+
+    # 1. The mismatch is real, and exists independently of the attack.
+    ids = tokenizer("hello#world")["input_ids"][0].tolist()
+    realised = tokenizer(
+        tokenizer.decode(ids, skip_special_tokens=True)
+    )["input_ids"][0].tolist()
+    assert ids != realised, "fixture must actually exhibit the mismatch"
+    assert len(realised) < len(ids), "the interior special token must be dropped"
+
+    # 2. The attack refuses rather than returning altered text.
+    with pytest.raises(RuntimeError) as excinfo:
+        Attacker(seq2seq_model, tokenizer).run("hello#world", FAST)
+
+    # 3. The error explains what happened and why it matters.
+    message = str(excinfo.value)
+    assert "re-tokenise" in message
+    assert "perturbation budget does not apply" in message
+    assert "optimised=" in message and "realised=" in message
+
+
+def test_rejection_yields_no_measurement(seq2seq_model):
+    """No efficiency number is produced for an unrealizable input.
+
+    Returning a ratio alongside the warning would be worse than failing: a
+    reviewer could quote it, and it would describe a different token sequence
+    than the one optimised.
+    """
+    attacker = Attacker(seq2seq_model, _InteriorSpecialTokenizer())
+    try:
+        attacker.run("hello#world", FAST)
+    except RuntimeError:
+        pass
+    else:  # pragma: no cover - the call above must raise
+        pytest.fail("an unrealizable input must not return a result")
+
+
+# ---------------------------------------------------- token-id input (task spec)
+
+
+def _ids(tokenizer, text):
+    return tokenizer(text)["input_ids"][0].tolist()
+
+
+def test_token_ids_are_accepted_and_returned_in_kind(seq2seq_model, tokenizer):
+    """The task types `x` as "text / tokens" and `adv_x` as "input".
+
+    So token ids in must give token ids back, not text: `adv_x` mirrors the
+    representation of `x` so the caller can feed it to the model exactly as they
+    fed `x`.
+    """
+    ids = _ids(tokenizer, "hello world")
+    adv_x, logs = Attacker(seq2seq_model, tokenizer).run(ids, FAST)
+
+    assert isinstance(adv_x, list)
+    assert all(isinstance(i, int) for i in adv_x)
+    assert len(adv_x) == len(ids)
+    assert adv_x == logs["perturbation"]["adversarial_token_ids"]
+    assert logs["perturbation"]["input_mode"] == "tokens"
+
+
+def test_token_and_text_input_optimise_the_same_sequence(seq2seq_model, tokenizer):
+    """The two representations are two doors into one attack, not two attacks."""
+    text = "hello world"
+    from_text = Attacker(seq2seq_model, tokenizer).run(text, FAST)[1]
+    from_ids = Attacker(seq2seq_model, tokenizer).run(_ids(tokenizer, text), FAST)[1]
+
+    assert (from_ids["perturbation"]["adversarial_token_ids"]
+            == from_text["perturbation"]["adversarial_token_ids"])
+    assert (from_ids["cost"]["adversarial_output_tokens"]
+            == from_text["cost"]["adversarial_output_tokens"])
+
+
+@pytest.mark.parametrize("wrap", [list, tuple, torch.tensor,
+                                  lambda v: torch.tensor([v])])
+def test_token_input_accepts_the_usual_containers(seq2seq_model, tokenizer, wrap):
+    ids = _ids(tokenizer, "hello world")
+    adv_x, logs = Attacker(seq2seq_model, tokenizer).run(wrap(ids), FAST)
+    assert adv_x == logs["perturbation"]["adversarial_token_ids"]
+
+
+def test_token_input_on_causal_models(causal_model, tokenizer):
+    ids = _ids(tokenizer, "hello world")
+    adv_x, logs = Attacker(causal_model, tokenizer).run(ids, FAST)
+    assert isinstance(adv_x, list) and len(adv_x) == len(ids)
+    assert logs["perturbation"]["input_mode"] == "tokens"
+    assert logs["cost"]["benign_output_tokens"] > 0
+
+
+def test_token_input_respects_the_same_budget_semantics(seq2seq_model, tokenizer):
+    """Budget accounting must not depend on which door the input came through."""
+    ids = _ids(tokenizer, "hello world")
+    cfg = dict(FAST, perturbation_budget=1, max_iterations=5)
+    adv_x, logs = Attacker(seq2seq_model, tokenizer).run(ids, cfg)
+
+    p = logs["perturbation"]
+    # Hamming is measured directly on ids -- no decode is involved at all.
+    assert p["hamming_distance"] == sum(a != b for a, b in zip(ids, adv_x))
+    assert p["hamming_distance"] <= p["positions_touched"] <= p["budget"] == 1
+
+
+def test_token_input_reports_round_trip_as_not_applicable(seq2seq_model, tokenizer):
+    """No realisation step happens, so claiming `true` would overstate it.
+
+    With text input the flag records a checked fact: the returned string
+    re-tokenises to the optimised ids. With token input nothing is decoded or
+    re-encoded, so the honest value is null rather than a vacuous true.
+    """
+    ids = _ids(tokenizer, "hello world")
+    _, logs = Attacker(seq2seq_model, tokenizer).run(ids, FAST)
+    assert logs["perturbation"]["round_trip_exact"] is None
+
+    _, text_logs = Attacker(seq2seq_model, tokenizer).run("hello world", FAST)
+    assert text_logs["perturbation"]["round_trip_exact"] is True
+    assert text_logs["perturbation"]["input_mode"] == "text"
+
+
+def test_interior_special_tokens_are_attackable_as_ids(seq2seq_model):
+    """The realisation boundary is a property of *text* input, not of the attack.
+
+    The same id sequence that must be refused as text -- because decoding drops
+    its interior special tokens -- can be attacked directly as ids, since nothing
+    is decoded. This is not a workaround for chat templates: template
+    scaffolding also contains ordinary tokens that stay perturbable, and only a
+    prefix can be protected.
+    """
+    tokenizer = _InteriorSpecialTokenizer()
+    with pytest.raises(RuntimeError, match="re-tokenise"):
+        Attacker(seq2seq_model, tokenizer).run("hello#world", FAST)
+
+    ids = tokenizer("hello#world")["input_ids"][0].tolist()
+    adv_x, logs = Attacker(seq2seq_model, tokenizer).run(ids, FAST)
+    assert len(adv_x) == len(ids)
+    assert logs["perturbation"]["input_mode"] == "tokens"
+
+
+@pytest.mark.parametrize(
+    "bad,exc,match",
+    [
+        ([1.0, 2.0], TypeError, "plain ints"),
+        ([-1, 5], ValueError, "out of range"),
+        ([10**9, 5], ValueError, "out of range"),
+        ([], ValueError, "empty"),
+        (["a", "b"], TypeError, "Batched text"),
+        ({"a": 1}, TypeError, "must be str or a sequence"),
+    ],
+)
+def test_malformed_input_gets_an_actionable_error(seq2seq_model, tokenizer, bad, exc, match):
+    """Every rejection names what was wrong and what is accepted.
+
+    Before this, a batched list of strings surfaced as a shape mismatch thrown
+    from inside a matmul, which tells the caller nothing.
+    """
+    with pytest.raises(exc, match=match):
+        Attacker(seq2seq_model, tokenizer).run(bad, FAST)
+
+
+def test_batched_tensor_input_is_refused_clearly(seq2seq_model, tokenizer):
+    ids = _ids(tokenizer, "hello world")
+    with pytest.raises(ValueError, match="Batched input is not supported"):
+        Attacker(seq2seq_model, tokenizer).run(torch.tensor([ids, ids]), FAST)
+
+
+def test_float_tensor_input_is_refused_clearly(seq2seq_model, tokenizer):
+    ids = _ids(tokenizer, "hello world")
+    with pytest.raises(TypeError, match="integer tensor"):
+        Attacker(seq2seq_model, tokenizer).run(torch.tensor(ids).float(), FAST)

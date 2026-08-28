@@ -15,13 +15,14 @@ Typical use::
 
 from .attacker import Attacker
 from .config import AttackConfig
-from .metrics import measure_cost
+from .metrics import measure_cost, measure_cost_from_ids
 from .objectives import available_objectives, get_objective, register
 
 __all__ = [
     "Attacker",
     "AttackConfig",
     "measure_cost",
+    "measure_cost_from_ids",
     "available_objectives",
     "get_objective",
     "register",

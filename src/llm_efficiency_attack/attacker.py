@@ -53,13 +53,18 @@ from __future__ import annotations
 import logging
 import random
 import time
-from typing import Any
+from typing import Any, Sequence
 
 import torch
 
 from .adapters import ModelAdapter, forbidden_token_ids
 from .config import AttackConfig
-from .metrics import ForwardCounter, interpret_censoring, measure_cost, model_device
+from .metrics import (
+    ForwardCounter,
+    interpret_censoring,
+    measure_cost_from_ids,
+    model_device,
+)
 from .objectives import get_objective
 
 logger = logging.getLogger(__name__)
@@ -87,6 +92,67 @@ class Attacker:
         self.tokenizer = tokenizer if tokenizer is not None else self._infer_tokenizer(model)
         self.adapter = ModelAdapter.for_model(self.model, self.tokenizer)
 
+    def _coerce_input(
+        self, x: Any
+    ) -> "tuple[str | None, list[int] | None]":
+        """Resolve `x` into exactly one of the two supported representations.
+
+        Returns `(text, None)` or `(None, ids)`. Rejecting bad input here, with a
+        message naming the accepted forms, is the difference between an
+        actionable error and a shape mismatch thrown from inside a matmul --
+        which is what a batched list of strings used to produce.
+        """
+        if isinstance(x, str):
+            return x, None
+
+        if torch.is_tensor(x):
+            if x.dtype.is_floating_point or x.dtype.is_complex:
+                raise TypeError(
+                    "Token ids must be an integer tensor, got dtype "
+                    f"{x.dtype}. Token ids index an embedding table; a float "
+                    "tensor is not a valid index."
+                )
+            if x.dim() == 2:
+                if x.shape[0] != 1:
+                    raise ValueError(
+                        f"Batched input is not supported: got shape {tuple(x.shape)}. "
+                        "Attack one example at a time."
+                    )
+                x = x[0]
+            elif x.dim() != 1:
+                raise ValueError(
+                    f"Token ids must be 1-D or (1, n), got shape {tuple(x.shape)}."
+                )
+            ids = [int(i) for i in x.tolist()]
+        elif isinstance(x, (list, tuple)):
+            if x and all(isinstance(i, str) for i in x):
+                raise TypeError(
+                    "Batched text is not supported: pass a single string, or "
+                    "token ids for one example. Attack one example at a time."
+                )
+            if not all(isinstance(i, int) and not isinstance(i, bool) for i in x):
+                raise TypeError(
+                    "Token ids must all be plain ints. Got element types "
+                    f"{sorted({type(i).__name__ for i in x})}."
+                )
+            ids = list(x)
+        else:
+            raise TypeError(
+                f"x must be str or a sequence of token ids, got {type(x).__name__}."
+            )
+
+        if not ids:
+            raise ValueError("Token id sequence is empty; nothing to attack.")
+
+        rows = self.adapter.embedding_matrix().shape[0]
+        out_of_range = [i for i in ids if i < 0 or i >= rows]
+        if out_of_range:
+            raise ValueError(
+                f"Token ids out of range for this model's embedding table "
+                f"(0..{rows - 1}): {sorted(set(out_of_range))[:8]}."
+            )
+        return None, ids
+
     @staticmethod
     def _infer_tokenizer(model: Any) -> Any:
         from transformers import AutoTokenizer
@@ -101,21 +167,50 @@ class Attacker:
 
     # ------------------------------------------------------------------ public
 
-    def run(self, x: str, config: dict[str, Any] | None = None) -> tuple[str, dict]:
+    def run(
+        self, x: "str | Sequence[int] | torch.Tensor", config: dict[str, Any] | None = None
+    ) -> tuple[Any, dict]:
         """Craft an adversarial variant of `x`.
 
         Args:
-            x: The benign input text. Text only; token-id inputs are not
-                supported, see the README scope note.
+            x: The benign input, in either representation:
+
+                * **text** (`str`) -- tokenised here, and `adv_x` is returned as
+                  text whose re-tokenisation is guaranteed to equal the ids that
+                  were optimised.
+                * **token ids** (`list[int]`, `tuple[int]`, or a 1-D or
+                  `(1, n)` integer tensor) -- used directly, and `adv_x` is
+                  returned in the same representation, as a `list[int]`.
+
+                `adv_x` always mirrors the representation of `x`, so the returned
+                value can be fed straight back to the model the same way `x` was.
+
             config: JSON-serialisable attack configuration. See `AttackConfig`.
 
         Returns:
-            `(adv_x, logs)` where `adv_x` is the adversarial text and `logs` is a
-            structured record of the run: per-iteration objective values and cost,
-            the benign-vs-adversarial comparison, instrumented attack compute, and
-            what the censoring state permits the cost ratio to mean.
+            `(adv_x, logs)` -- `logs` records per-iteration objective values and
+            cost, the benign-vs-adversarial comparison, instrumented attack
+            compute, and what the censoring state permits the cost ratio to mean.
+            `logs["perturbation"]["input_mode"]` says which representation was
+            used.
+
+        Note on the two representations. Text input has to survive a
+        decode/re-encode step, which is not an identity for arbitrary id
+        sequences, so the attack rejects any candidate that would break it and
+        refuses inputs it cannot realise exactly (interior special tokens, for
+        instance). Token input performs no such step -- the object optimised *is*
+        the object returned -- so that constraint does not arise and
+        `round_trip_exact` is reported as `null` rather than `true`, because
+        nothing was round-tripped.
+
+        This does **not** make chat-templated inputs attackable in a meaningful
+        sense. Template scaffolding contains ordinary, non-special tokens (an
+        `assistant` header, newlines) that remain perturbable, and this toolbox
+        protects only a prefix. Editing scaffolding is task damage, not an
+        efficiency attack. See RESULTS.md.
         """
         cfg = AttackConfig.from_dict(config)
+        text_input, token_ids = self._coerce_input(x)
         self._seed_everything(cfg.seed)
 
         if cfg.verbose:
@@ -134,16 +229,27 @@ class Attacker:
         self._move_model(device)
         self.model.eval()
         try:
-            return self._run_on_device(x, cfg, device)
+            return self._run_on_device(text_input, token_ids, cfg, device)
         finally:
             # `run()` borrows the caller's model; it should not silently leave it
             # in a different mode than it found it.
             self.model.train(was_training)
 
-    def _run_on_device(self, x: str, cfg: AttackConfig, device: torch.device):
-        encoded = self.tokenizer(x, return_tensors="pt").to(device)
-        input_ids = encoded["input_ids"]
-        attention_mask = encoded.get("attention_mask", torch.ones_like(input_ids))
+    def _run_on_device(
+        self,
+        text: "str | None",
+        token_ids: "list[int] | None",
+        cfg: AttackConfig,
+        device: torch.device,
+    ):
+        realize = text is not None
+        if realize:
+            encoded = self.tokenizer(text, return_tensors="pt").to(device)
+            input_ids = encoded["input_ids"]
+            attention_mask = encoded.get("attention_mask", torch.ones_like(input_ids))
+        else:
+            input_ids = torch.tensor([token_ids], dtype=torch.long, device=device)
+            attention_mask = torch.ones_like(input_ids)
         original_ids = input_ids.clone()
 
         eos_ids = self.adapter.eos_token_ids()
@@ -181,7 +287,7 @@ class Attacker:
             )
             counters.diagnostic_forwards = forwards.count
 
-            benign = self._measure(x, cfg, forwards, counters)
+            benign = self._measure(input_ids, cfg, forwards, counters)
 
             eligible = self._eligible_positions(input_ids, cfg)
             if not eligible:
@@ -230,7 +336,7 @@ class Attacker:
 
                 best = self._pick_best_candidate(
                     input_ids, attention_mask, objective_fn, eos_ids, cfg,
-                    candidates, force_full, counters,
+                    candidates, force_full, realize, counters,
                 )
 
                 if best is None or best["score"] >= current_score:
@@ -245,8 +351,7 @@ class Attacker:
                 changed.add(position)
                 current_score = best["score"]
 
-                text_now = self._decode(input_ids)
-                cost_now = self._measure(text_now, cfg, forwards, counters)
+                cost_now = self._measure(input_ids, cfg, forwards, counters)
 
                 iterations.append(
                     {
@@ -268,10 +373,25 @@ class Attacker:
                     cost_now["stopped_by"],
                 )
 
-            adv_x = self._decode(input_ids)
-            adversarial = self._measure(adv_x, cfg, forwards, counters)
+            adversarial = self._measure(input_ids, cfg, forwards, counters)
             counters.total_forwards = forwards.count
 
+        if not realize:
+            # Token in, token out. There is no text realisation step, so nothing
+            # can be lost in one; `round_trip_exact` is reported as null rather
+            # than true, because no round trip happened.
+            adv_x: Any = input_ids[0].tolist()
+            round_trip_exact = None
+            return adv_x, self._build_logs(
+                cfg=cfg, benign=benign, adversarial=adversarial,
+                iterations=iterations, original_ids=original_ids,
+                final_ids=input_ids, changed=changed, counters=counters,
+                round_trip_exact=round_trip_exact,
+                embedding_deviation=embedding_deviation,
+                force_full_horizon=force_full, input_mode="tokens",
+            )
+
+        adv_x = self._decode(input_ids)
         realised_ids = self._realise(adv_x, input_ids.device)
         round_trip_exact = self._ids_equal(realised_ids, input_ids)
         if not round_trip_exact:
@@ -298,6 +418,7 @@ class Attacker:
             round_trip_exact=round_trip_exact,
             embedding_deviation=embedding_deviation,
             force_full_horizon=force_full,
+            input_mode="text",
         )
         return adv_x, logs
 
@@ -412,6 +533,7 @@ class Attacker:
         cfg: AttackConfig,
         candidates: list[tuple[int, int]],
         force_full: bool,
+        realize: bool,
         counters: "_ComputeCounters",
     ) -> dict | None:
         """Exactly evaluate each admissible candidate and return the best.
@@ -428,7 +550,7 @@ class Attacker:
             trial = input_ids.clone()
             trial[0, position] = token_id
 
-            if not self._round_trips(trial):
+            if realize and not self._round_trips(trial):
                 counters.rejected_non_round_trip += 1
                 continue
 
@@ -481,15 +603,21 @@ class Attacker:
 
     def _measure(
         self,
-        text: str,
+        input_ids: torch.Tensor,
         cfg: AttackConfig,
         forwards: ForwardCounter,
         counters: "_ComputeCounters",
     ) -> dict:
-        """Measure cost, attributing the model forwards it spends to instrumentation."""
+        """Measure cost, attributing the model forwards it spends to instrumentation.
+
+        Measures from ids rather than from decoded text. In text mode the two are
+        equivalent by construction -- the search only commits candidates whose
+        text re-tokenises to exactly these ids -- and measuring from ids keeps a
+        single measurement path for both input representations.
+        """
         before = forwards.count
-        result = measure_cost(
-            self.model, self.tokenizer, text, max_new_tokens=cfg.max_new_tokens
+        result = measure_cost_from_ids(
+            self.model, self.tokenizer, input_ids, max_new_tokens=cfg.max_new_tokens
         )
         counters.measurement_forwards += forwards.count - before
         return result
@@ -573,9 +701,10 @@ class Attacker:
         final_ids: torch.Tensor,
         changed: set[int],
         counters: "_ComputeCounters",
-        round_trip_exact: bool,
+        round_trip_exact: "bool | None",
         embedding_deviation: float,
         force_full_horizon: bool,
+        input_mode: str,
     ) -> dict:
         """Assemble the structured run record."""
         rows_seen = counters.trajectory_rows
@@ -619,6 +748,7 @@ class Attacker:
                 "positions_touched": len(changed),
                 "positions_changed": sorted(changed),
                 "hamming_distance": hamming,
+                "input_mode": input_mode,
                 "round_trip_exact": round_trip_exact,
                 "original_token_ids": original,
                 "adversarial_token_ids": adversarial_ids,
@@ -628,11 +758,14 @@ class Attacker:
                     "differs from the original. They are not the same number: a "
                     "position written twice counts once as touched, and a position "
                     "restored to its original token still counts as touched. The "
-                    "budget bounds positions_touched. round_trip_exact records "
-                    "that the returned text re-tokenises to exactly these ids, so "
-                    "the bound applies to what the caller feeds the model. This "
-                    "is a bound on token-level edit count only: no semantic, "
-                    "fluency, or human-perceptibility constraint is enforced."
+                    "budget bounds positions_touched. With text input, "
+                    "round_trip_exact records that the returned text re-tokenises "
+                    "to exactly these ids, so the bound applies to what the "
+                    "caller feeds the model; with token input it is null, because "
+                    "the ids are returned directly and no realisation step "
+                    "occurs. This is a bound on token-level edit count only: no "
+                    "semantic, fluency, or human-perceptibility constraint is "
+                    "enforced."
                 ),
             },
             "attack_cost": {

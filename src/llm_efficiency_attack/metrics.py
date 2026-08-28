@@ -100,7 +100,33 @@ def measure_cost(
     """
     device = model_device(model)
     inputs = tokenizer(text, return_tensors="pt").to(device)
-    input_len = inputs["input_ids"].shape[1]
+    return measure_cost_from_ids(
+        model, tokenizer, inputs["input_ids"], max_new_tokens
+    )
+
+
+def measure_cost_from_ids(
+    model: Any,
+    tokenizer: Any,
+    input_ids: Any,
+    max_new_tokens: int = 128,
+) -> dict[str, Any]:
+    """`measure_cost` for a token-id tensor that is already prepared.
+
+    Exists because `Attacker.run` accepts token ids as well as text. When the
+    caller supplies ids there is no text to tokenise, and inventing one by
+    decoding would reintroduce exactly the decode/re-encode step the token
+    interface avoids. `measure_cost` delegates here after tokenising, so the two
+    entry points cannot drift apart.
+
+    Args:
+        input_ids: `(1, seq_len)` integer tensor, already on the model's device.
+    """
+    input_len = input_ids.shape[1]
+    inputs = {
+        "input_ids": input_ids,
+        "attention_mask": torch.ones_like(input_ids),
+    }
 
     # `no_grad` because measuring needs no autograd graph -- it is faster and
     # uses less memory. The attack module deliberately does the opposite, since
