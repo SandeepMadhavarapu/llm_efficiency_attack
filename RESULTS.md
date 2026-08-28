@@ -38,6 +38,12 @@ Because neither generation reached `max_new_tokens`, this 1.50× is an actual
 measurement rather than a censored lower bound. Raw log:
 `results/quickstart_t5-small.json`.
 
+**Does the token count translate into wall-clock time?** On one GPU for this
+one pair, yes: median latency 43.98 ms → 62.74 ms, a **1.43× latency ratio**
+against the 1.50× token ratio, with non-overlapping interquartile ranges. See
+[§11](#11-does-the-token-count-proxy-translate-into-latency). Token count remains
+the primary metric because it is deterministic; latency is secondary.
+
 **Determinism.** Re-running `examples/quickstart.py` rewrites only the wall-clock
 fields (`wall_time_s`, `wall_time_ratio`, per-iteration `elapsed_s`). Every
 deterministic field — token ids, objective values at each iteration, output
@@ -639,6 +645,70 @@ Raw log: `results/cuda_smoke.json`.
 
 ---
 
+## 11. Does the token-count proxy translate into latency?
+
+```bash
+python examples/latency_validation.py     # requires a CUDA device
+```
+
+Generated-token count is the primary metric because it is deterministic and
+hardware-independent, and this document is careful to call it a *proxy* for
+autoregressive decoding work rather than a latency measurement. That caution
+leaves a fair question open: the threat model is about serving cost, and the
+NMTSloth paper reports latency. If a 1.50× token increase does not move
+wall-clock time, the proxy is not tracking the quantity anyone cares about.
+
+**Protocol, fixed before any measurement.** No attack is re-run: the benign and
+adversarial strings are read from the already-committed
+`results/quickstart_t5-small.json`, so this cannot become a search for a pair
+with a flattering latency ratio. Same model instance, same device, same greedy
+config, `max_new_tokens=128`, batch size 1. **30 warm-up generations per
+condition** (excluding CUDA context creation, kernel autotuning and allocator
+growth), then **100 timed trials per condition**, predeclared and not adjusted
+afterwards. Trials **alternate** benign/adversarial so thermal and clock drift
+hit both conditions equally. `torch.cuda.synchronize()` immediately before and
+after each timer, because CUDA launches are asynchronous and unsynchronised
+timing measures launch overhead rather than execution. Median and IQR rather
+than mean and standard deviation, since generation latency is right-skewed by
+occasional scheduler interference.
+
+| condition | generated tokens | median latency | IQR |
+|---|---:|---:|---|
+| benign | 6 | **43.98 ms** | [41.88, 48.47] ms |
+| adversarial | 9 | **62.74 ms** | [60.35, 67.74] ms |
+
+| quantity | value |
+|---|---:|
+| median latency ratio | **1.43×** |
+| generated-token ratio | 1.50× |
+| median gap | 18.76 ms |
+| larger IQR | 7.39 ms |
+| gap exceeds spread | **yes** |
+
+**What was observed.** The reported interquartile ranges do not overlap:
+benign [41.88, 48.47] ms and adversarial [60.35, 67.74] ms. The median gap is
+18.76 ms. No significance test was performed and none is implied — this is a
+description of the measured distributions, not an inference from them.
+
+The measured 1.43× latency ratio is slightly below the 1.50× generated-token
+ratio, which is consistent with fixed encoder, tokenisation and generation-setup
+costs that are paid once regardless of output length. That is an interpretation
+of this measurement, not a rule: nothing here establishes that latency must scale
+in any particular relation to token count.
+
+**Scope.** This result covers `t5-small`, the single frozen benign/adversarial
+pair from `results/quickstart_t5-small.json`, this RTX 5060 Laptop GPU
+environment, and the greedy generation configuration measured here — batch size
+1, `max_new_tokens=128`. It shows the token-count metric is not inert on this
+hardware for this pair. It does not establish a latency claim for other models,
+inputs, batch sizes, hardware, or serving configurations, and **the primary
+metric is unchanged**. Environment:
+NVIDIA GeForce RTX 5060 Laptop GPU, torch 2.11.0+cu128, CUDA 12.8, transformers
+5.16.1. All 200 raw per-trial timings are retained in
+`results/latency_t5_small.json`.
+
+---
+
 ## Limitations
 
 Classified. A limitation is only marked resolved where evidence actually resolves
@@ -683,7 +753,10 @@ it.
   offloading and quantised models are refused with a clear error.
 * **Generated-token count is a proxy for autoregressive decoding work**, not a
   measurement of latency, energy, or total compute. Per-step cost grows with the
-  KV cache and varies with hardware and batching.
+  KV cache and varies with hardware and batching. §11 measures the proxy against
+  wall-clock time for one pair on one GPU (1.43× latency against a 1.50× token
+  ratio, non-overlapping IQRs); that is a single measurement scoped to that
+  model, pair, hardware and generation config, not a general latency claim.
 * **Greedy decoding only**, so that the reproducibility requirement can hold.
 * **Token-level substitution only.** The original paper also explores
   character-level and structural perturbations, not implemented here.
