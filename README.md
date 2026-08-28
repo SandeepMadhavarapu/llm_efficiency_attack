@@ -1,21 +1,39 @@
 # llm_efficiency_attack
 
-A white-box efficiency-attack toolbox for Hugging Face sequence models. It
+A white-box efficiency-attack toolbox for Hugging Face sequence models: it
 searches for a small, budgeted edit to an input that makes the model generate a
-longer output, inflating decoding cost.
+longer output, inflating decoding cost. Generalises the NMTSloth attack
+([Chen et al., FSE'22](https://dl.acm.org/doi/10.1145/3540250.3549102)) from
+neural machine translation to seq2seq and causal HF models.
 
-Generalises the NMTSloth attack ([Chen et al., FSE'22](https://dl.acm.org/doi/10.1145/3540250.3549102))
-from neural machine translation into a toolbox that *runs* on both seq2seq and
-causal language models. Increased cost is demonstrated on two encoder-decoder
-models; on causal models the attack executes but efficacy is not demonstrated —
-see [What has actually been run](#what-has-actually-been-run).
+## 60-second review
 
-**Measured on `t5-small`: 6 → 9 generated tokens (1.50×) from a one-token edit**,
-uncensored, reproducing identically on CPU and GPU. Evaluated once more on a
-**hash-locked 24-input held-out benchmark**, where no strategy — including the
-gradient — is distinguishable from a random control. Both the positive and the
-negative result are in [RESULTS.md](RESULTS.md); the derivation, with each
-equation tied to code and tests, is in [docs/METHOD.md](docs/METHOD.md).
+The required API, verbatim:
+
+```python
+from llm_efficiency_attack import Attacker
+
+attack = Attacker(model)
+adv_x, logs = attack.run(x, config)
+```
+
+What the evidence shows:
+
+| | |
+|---|---|
+| ✓ **Real-model cost increase** | `t5-small` **6 → 9** generated tokens (**1.50×**) from a **one-token** edit, uncensored |
+| ✓ **The proxy is not inert** | on one GPU for that pair, **1.43× median wall-clock latency** (100 timed trials/condition, non-overlapping IQRs) |
+| ✓ **Correctness independently checked** | gradient vs. finite differences (7.4e-5), forward counts vs. an independent oracle (554 = 554), CPU/GPU bit-identical |
+| ⚠ **Negative result** | gradient strategies are **not** shown to beat a random control on a hash-locked 24-input held-out benchmark |
+| → **What that taught** | the shortlist draws 90–100% of candidates from one token position; fixing that raised budget use 1/24 → 19/24 and **still** did not close the gap, falsifying the initial explanation |
+
+**Scope in one line:** cost increase is demonstrated on two encoder-decoder
+models (`t5-small`, Marian — the latter weakly). On causal models the attack
+executes end to end but efficacy is **not** demonstrated, because base causal LMs
+already run to the decoding ceiling. Details in
+[What has actually been run](#what-has-actually-been-run).
+
+[Quickstart](examples/quickstart.py) · [Results](RESULTS.md) · [Method](docs/METHOD.md) · [Tests](tests/) · [CI](.github/workflows/ci.yml)
 
 ---
 
@@ -45,19 +63,18 @@ Passing it explicitly, `Attacker(model, tokenizer)`, avoids the lookup.
 it can be fed to the model exactly the way `x` was. One example at a time —
 batched input is refused with a clear error.
 
-Run the demo and the experiments:
+Run it:
 
 ```bash
 python examples/quickstart.py                    # t5-small, the snippet above
-python examples/quickstart.py --model gpt2       # causal LM (see the caveat below)
-python examples/ablation.py                      # gradient vs random, top_k sweep
-python examples/objective_diagnostic.py          # objective formulation comparison
-python examples/hotflip_diagnostic.py            # quality of the first-order ranking
-python examples/cross_architecture.py            # Marian + instruction-tuned causal
-python examples/invariant_sweep.py               # safety invariants across 24 real runs
-python examples/search_diagnostic.py             # where gradient search loses to random
+pytest                                           # offline, no downloads
 python examples/heldout_evaluation.py            # one-shot, hash-verified held-out run
 ```
+
+The remaining experiments — `ablation.py`, `search_diagnostic.py`,
+`hotflip_diagnostic.py`, `objective_diagnostic.py`, `cross_architecture.py`,
+`invariant_sweep.py`, and `latency_validation.py` / `cuda_smoke.py` (GPU) —
+regenerate every number in [RESULTS.md](RESULTS.md).
 
 On an NVIDIA GPU:
 
@@ -417,6 +434,7 @@ examples/
 ├── invariant_sweep.py       safety invariants across many real runs
 ├── search_diagnostic.py     where gradient search loses to random
 ├── heldout_evaluation.py    one-shot evaluation on the frozen benchmark
+├── latency_validation.py    does the token-count proxy move wall-clock time
 └── cuda_smoke.py            full public API on real CUDA hardware
 benchmarks/         frozen held-out inputs + SHA-256 freeze and strategy locks
 results/            committed logs backing every number in RESULTS.md

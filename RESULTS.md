@@ -709,6 +709,72 @@ NVIDIA GeForce RTX 5060 Laptop GPU, torch 2.11.0+cu128, CUDA 12.8, transformers
 
 ---
 
+## 12. Relationship to the NMTSloth reference implementation
+
+Task 2 lists the NMTSloth paper and its reference codebase under **"Background
+material (study before coding)"**, and asks the applicant to understand *"how the
+original repo generates and evaluates adversarial inputs"*. It does not ask for a
+reproduction. This section records what was read, what was attempted, and what
+was not achieved.
+
+**Status: source inspection plus an unsuccessful local execution attempt.** Not a
+reproduction. Repository `https://github.com/SeekingDream/FSE22_NMTSloth` at
+commit `8f72c15f91e2761e793b559d5428fab8fd15400f`. I inspected the
+implementation and attempted to recreate its execution environment, but **did not
+succeed in recreating that environment on the machines available to me**, so no
+original run was executed here. The attempts, recorded so the reader can judge
+them:
+
+| attempt | result |
+|---|---|
+| Import under this project's stack (torch 2.13, transformers 5.16) | `ModuleNotFoundError: No module named 'transformers.generation_utils'` — the module was removed from `transformers` after the pinned era |
+| Install the pinned stack (`torch==1.10.2`, `transformers==4.16.2`) | `ERROR: No matching distribution found for torch==1.10.2` — no wheel for Python 3.12, the only interpreter available here |
+| `transformers==4.16.2` with a modern torch | `transformers` installed; the torch install aborted on a Windows long-path error in the scratch directory |
+
+`generate_adv.py` additionally hardcodes `torch.device('cuda')` and iterates 500
+sentences.
+
+These are constraints of *this* environment — a Python 3.12-only machine, a
+`transformers` API that moved after the pinned release, and a local Windows path
+limit. **They say nothing about whether the reference implementation runs in the
+environment it was written for, and nothing here should be read as a claim that
+it does not.** No reference code was copied, nothing in this repository
+reproduces the paper's numbers, and the paper's reported results are not restated
+here as though they had been re-measured.
+
+What the reading established, mapping concept to concept:
+
+| NMTSloth reference | This toolbox |
+|---|---|
+| `leave_eos_target_loss`: BCE against zero on `P(EOS) + P(currently generated token)`, with the final step's term halved | `eos_suppression`: mean `log P(stop)`, EOS only, via `logsumexp` over all stop ids |
+| Gradient taken w.r.t. the **embedding matrix** (`self.embedding.grad`, `vocab × dim`, accumulated over every position where a token occurs) | Gradient w.r.t. the **per-position input embeddings**, so `g_i` is specific to position `i` |
+| `score = (E − E[t]) · g_t`, then `argsort` ascending | Same first-order form; `topk(−flat, k)` over the masked `(positions × vocab)` table |
+| `select_best`: re-rank surviving candidates by **actual generated length** | Re-score candidates by the **exact objective**, commit only on strict improvement |
+| `max_per = 3` | `perturbation_budget = 3` |
+| Beam search (`num_beams` from the model config) | Greedy only, so the cost metric is deterministic |
+| Character, word and structure perturbations, alongside several baseline attacks | Token substitution only |
+| Targets include `T5-small` and `Helsinki-NLP/opus-mt-*` | The same two families are the ones evaluated here |
+
+**One difference is worth naming as a hypothesis rather than a footnote.** Both
+approaches use gradients to propose candidate mutations. They differ in how a
+candidate is *chosen*: the reference's `select_best` generates translations for
+the surviving candidates and selects by **actual generated sequence length**,
+while this toolbox shortlists by first-order score and commits according to the
+**configured surrogate objective**. The measured within-input correlation between
+that surrogate and generated length is only about −0.28 (§3), so the two
+selection rules are not equivalent.
+
+> **Untested hypothesis.** The difference between selecting by actual generated
+> length and selecting by the surrogate objective *may* contribute to the weak
+> gradient-versus-random performance observed in §2 and §9.
+
+No experiment here tested that. It is not a finding, it does not explain the
+result, and it is emphatically not a claim that the reference's method would
+outperform this one — nothing was run that could support any of those. It is
+stated because it is the first experiment worth running next.
+
+---
+
 ## Limitations
 
 Classified. A limitation is only marked resolved where evidence actually resolves
@@ -757,6 +823,12 @@ it.
   wall-clock time for one pair on one GPU (1.43× latency against a 1.50× token
   ratio, non-overlapping IQRs); that is a single measurement scoped to that
   model, pair, hardware and generation config, not a general latency claim.
+* **The reference implementation was inspected; its execution environment was
+  not successfully recreated here.** The pinned 2021-era stack does not install
+  on the only Python interpreter available on this machine, so no original run
+  was executed and nothing in this repository reproduces the paper's numbers.
+  This is a limitation of the environments available to me, not a statement about
+  the reference repository — see §12.
 * **Greedy decoding only**, so that the reproducibility requirement can hold.
 * **Token-level substitution only.** The original paper also explores
   character-level and structural perturbations, not implemented here.
